@@ -17,9 +17,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        binding.root.setOnClickListener{
-
-        }
         return binding.root
     }
 
