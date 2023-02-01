@@ -29,11 +29,15 @@
                 tools:layout_editor_absoluteX="0dp" />
 
             <ImageButton
-                android:id="@+id/imageButton3"
+                android:id="@+id/btn_setting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="24dp"
+                android:background="@android:color/transparent"
+                android:minHeight="48dp"
+                android:minWidth="48dp"
                 android:src="@drawable/icon_setting"
+                android:contentDescription="@string/app_name"
                 app:layout_constraintBottom_toBottomOf="@+id/toolbar"
                 app:layout_constraintEnd_toEndOf="@+id/toolbar"
                 app:layout_constraintTop_toTopOf="@+id/toolbar" />
@@ -43,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:text="Home"
+                android:text="@string/home"
                 android:textColor="@color/dark_blue"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@+id/toolbar"
