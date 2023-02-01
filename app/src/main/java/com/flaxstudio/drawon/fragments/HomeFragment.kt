@@ -18,7 +18,7 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.root.setOnClickListener{
-            findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
+
         }
         return binding.root
     }
@@ -26,6 +26,9 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnSetting.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
+        }
 
     }
 }
