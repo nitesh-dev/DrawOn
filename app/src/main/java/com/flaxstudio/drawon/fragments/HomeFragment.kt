@@ -29,7 +29,7 @@ class HomeFragment : Fragment() {
         val viewModel = ViewModelProvider(requireActivity())[MainActivityViewModel::class.java]
         viewModel.sendMessage("Drawing 1")
 
-        findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
+        //findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
         binding.btnSetting.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
         }
