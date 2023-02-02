@@ -6,11 +6,6 @@
     app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/drawFragment"
-        android:name="com.flaxstudio.drawon.fragments.DrawFragment"
-        android:label="fragment_draw"
-        tools:layout="@layout/fragment_draw" />
-    <fragment
         android:id="@+id/settingsFragment"
         android:name="com.flaxstudio.drawon.fragments.SettingsFragment"
         android:label="fragment_settings"
@@ -21,10 +16,15 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_homeFragment_to_drawFragment"
-            app:destination="@id/drawFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_drawFragment"
+            app:destination="@id/drawFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/drawFragment"
+        android:name="com.flaxstudio.drawon.fragments.DrawFragment"
+        android:label="fragment_draw"
+        tools:layout="@layout/fragment_draw" />
 </navigation>
