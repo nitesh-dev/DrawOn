@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.flaxstudio.drawon.utils.Vector2
-import com.google.gson.Gson
 import java.util.Vector
 
 class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) {
