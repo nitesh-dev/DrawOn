@@ -5,25 +5,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.flaxstudio.drawon.R
-import com.flaxstudio.drawon.adpters.HomePagerAdapter
 import com.flaxstudio.drawon.databinding.FragmentHomeBinding
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModel
-import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
-    private val tabTitles = arrayListOf("All" , "Today" , "Week" , "Month")
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        setupLayoutWithViewPager()
         return binding.root
     }
 
@@ -34,26 +30,11 @@ class HomeFragment : Fragment() {
         val viewModel = ViewModelProvider(requireActivity())[MainActivityViewModel::class.java]
         viewModel.sendMessage("Drawing 1")
 
-        //findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
+        findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
         binding.btnSetting.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
 
         }
     }
 
-    private fun setupLayoutWithViewPager() {
-        binding.viewPager.adapter = HomePagerAdapter(this)
-        TabLayoutMediator(binding.tabBarLayout , binding.viewPager){ tab , position ->
-            tab.text = tabTitles[position]
-        }.attach()
-
-
-
-        for (i in 0..4){
-            val textView = LayoutInflater.from(requireContext()).inflate(R.layout.tab_title , null)
-            as TextView
-
-            binding.tabBarLayout.getTabAt(i)?.customView = textView
-        }
-    }
 }
