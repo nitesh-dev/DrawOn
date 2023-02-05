@@ -26,8 +26,3 @@ data class ProjectData(
     var thumbnailLoc: String,
 
     )
-
-data class CanvasDetails(
-    var whiteBoardData: WhiteBoardData,
-
-)
