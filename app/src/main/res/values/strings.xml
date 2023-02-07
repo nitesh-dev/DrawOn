@@ -13,4 +13,5 @@
     <string name="rate_us">Rate Us</string>
     <string name="feedback">Feedback</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="tab_bar_desc">Tab bar</string>
 </resources>

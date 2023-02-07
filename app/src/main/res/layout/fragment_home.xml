@@ -63,17 +63,23 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabBar_layout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:layout_margin="16dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/tab_background"
-        android:contentDescription="tabBar"
+        android:contentDescription="@string/tab_bar_desc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/app_bar"
-        app:tabGravity="center"
-        app:tabIndicatorHeight="0dp"
+        app:tabGravity="fill"
+        app:tabIndicator="@drawable/tab_background"
+        app:tabIndicatorColor="@color/dark_blue"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorGravity="stretch"
+        app:tabInlineLabel="true"
         app:tabMode="fixed"
+        app:tabTextColor="@color/dark_blue"
+        app:tabRippleColor="@null"
         app:tabSelectedTextColor="@color/white">
 
     </com.google.android.material.tabs.TabLayout>

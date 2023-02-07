@@ -36,5 +36,10 @@ class HomeFragment : Fragment() {
 
         }
     }
-
+    private fun setupLayoutWithViewPager() {
+        binding.viewPager.adapter = HomePagerAdapter(this)
+        TabLayoutMediator(binding.tabBarLayout , binding.viewPager){ tab , position ->
+            tab.text = tabTitles[position]
+        }.attach()
+    }
 }
