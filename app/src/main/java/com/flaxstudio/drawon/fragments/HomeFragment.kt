@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.flaxstudio.drawon.R
@@ -46,14 +45,5 @@ class HomeFragment : Fragment() {
         TabLayoutMediator(binding.tabBarLayout , binding.viewPager){ tab , position ->
             tab.text = tabTitles[position]
         }.attach()
-
-
-
-        for (i in 0..4){
-            val textView = LayoutInflater.from(requireContext()).inflate(R.layout.tab_title , null)
-            as TextView
-
-            binding.tabBarLayout.getTabAt(i)?.customView = textView
-        }
     }
 }
