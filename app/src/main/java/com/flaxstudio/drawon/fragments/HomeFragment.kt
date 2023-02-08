@@ -1,27 +1,27 @@
 package com.flaxstudio.drawon.fragments
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.flaxstudio.drawon.Adapters.HomePagerAdapter
 import com.flaxstudio.drawon.ProjectApplication
 import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.databinding.FragmentHomeBinding
-import com.flaxstudio.drawon.utils.ShapeType
-import com.flaxstudio.drawon.utils.Size
-import com.flaxstudio.drawon.utils.ToolProperties
+import com.flaxstudio.drawon.utils.*
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModel
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
-    private val mainActivityViewModel: MainActivityViewModel by viewModels {
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels {
         MainActivityViewModelFactory((requireActivity().application as ProjectApplication).repository)
     }
 
@@ -37,14 +37,23 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+
+
+    private var tempArr = ArrayList<Project>()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainActivityViewModel.allProjects.observe(viewLifecycleOwner){
 
+        mainActivityViewModel.allProjects.observe(viewLifecycleOwner){ data ->
             // use this for recycler view
-            println(it.size)
+            println(data.size)
+            tempArr = data as ArrayList<Project>
+
+            //openProject(2)
         }
+
+        setUpAppData()
 
     }
 
@@ -59,7 +68,8 @@ class HomeFragment : Fragment() {
     // the below function will load app data
     private fun setUpAppData(){
 
-        //createNewProject("Untitled", Size(500, 500))
+        createNewProject("Untitled", Size(500, 500))
+
     }
     private fun setupLayoutWithViewPager() {
         binding.viewPager.adapter = HomePagerAdapter(this)
@@ -71,26 +81,32 @@ class HomeFragment : Fragment() {
 
 
     private fun createNewProject(projectName: String, whiteBoardSize: Size){
-//        val emptyShapeData = ArrayList<Shape>()
-//        val projectId = viewModel.generateUniqueId()
-//        val newProject = Project(0, projectId, projectName, false, "", whiteBoardSize)
-//        viewModel.projectDao.addProject(newProject)
-//
-//        viewModel.openedProject = viewModel.projectDao.getProjectById(projectId)
-//        viewModel.saveProject(requireContext(), emptyShapeData, defaultToolbarProperties)
-//
-//        findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
+        val emptyShapeData = ArrayList<Shape>()
+        val projectId = mainActivityViewModel.generateUniqueId()
+        val newProject = Project(0, projectId, projectName, false, "", whiteBoardSize.width, whiteBoardSize.height)
+
+        mainActivityViewModel.createProject(newProject){
+
+            mainActivityViewModel.openedProject = newProject
+            mainActivityViewModel.saveProject(requireContext(), emptyShapeData, defaultToolbarProperties)
+
+            val emptyThumbnail = Bitmap.createBitmap(128, 128, Bitmap.Config.RGB_565)
+            mainActivityViewModel.saveBitmap(requireContext(), emptyThumbnail, true)
+            findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
+        }
 
     }
 
     private fun openProject(projectIndex: Int){
+
+        mainActivityViewModel.openedProject = tempArr[projectIndex]
         // do something here....
         findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
     }
 
 
 
-    val defaultToolbarProperties = ArrayList<ToolProperties>().apply {
+    private val defaultToolbarProperties = ArrayList<ToolProperties>().apply {
         // add brush
         add(ToolProperties(ShapeType.Brush, Color.TRANSPARENT, Color.BLACK, 4f))
 

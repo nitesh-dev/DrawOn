@@ -50,6 +50,23 @@ class ProjectRepository(private val projectDao: ProjectDao) {
     suspend fun insert(project: Project) {
         projectDao.addProject(project)
     }
+
+    @WorkerThread
+    suspend fun update(project: Project) {
+        projectDao.updateProject(project)
+    }
+
+
+    @WorkerThread
+    suspend fun delete(project: Project) {
+        projectDao.deleteProject(project)
+    }
+
+    @WorkerThread
+    suspend fun getProjectById(projectId: String): Project {
+        return projectDao.getProjectById(projectId)
+    }
+
 }
 @Database(entities = [Project::class], version = 1, exportSchema = false)
 abstract class AppProjectDatabase : RoomDatabase() {

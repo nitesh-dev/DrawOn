@@ -9,6 +9,8 @@ import com.flaxstudio.drawon.utils.*
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
 class MainActivityViewModel(private val repository: ProjectRepository): ViewModel() {
 
@@ -16,9 +18,29 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
 
     //room
     val allProjects: LiveData<List<Project>> = repository.allProjects.asLiveData()
-    fun addProject(project: Project) = viewModelScope.launch(Dispatchers.Default) {
+
+
+    fun createProject(project: Project, callback: () -> Unit) = viewModelScope.launch(Dispatchers.Default) {
         repository.insert(project)
+        withContext(Dispatchers.Main){
+            callback()
+        }
     }
+
+    fun updateProject(project: Project) = viewModelScope.launch ( Dispatchers.Default){
+        repository.update(project)
+    }
+
+    fun deleteProject(context: Context , project: Project, callback: () -> Unit) = viewModelScope.launch  (Dispatchers.Default){
+        repository.delete(project)
+        deleteLocalFile(context, project.projectId + ".json")
+        deleteLocalFile(context, project.projectId + ".png")
+
+        withContext(Dispatchers.Main){
+            callback()
+        }
+    }
+
 
 
 
@@ -53,6 +75,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
     }
 
     fun loadProject(context: Context): ProjectData {
+
         val gson = GsonBuilder()
             .registerTypeAdapterFactory(typeAdapterFactory)
             .create()
@@ -111,6 +134,13 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
     private fun loadProjectFromLocal(context: Context, jsonFileName: String): String{
         context.openFileInput("$jsonFileName.json").use {
             return String(it.readBytes())
+        }
+    }
+
+    private fun deleteLocalFile(context: Context, fileName: String){
+        val file = File(context.filesDir, fileName)
+        if (file.exists()) {
+            file.delete()
         }
     }
 

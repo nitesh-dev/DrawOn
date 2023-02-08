@@ -45,6 +45,9 @@ open class Shape{
 open class Rectangle: Shape() {
     var startPos = Vector2()
     var endPos = Vector2()
+    init {
+        shapeType = ShapeType.Rectangle
+    }
 
     fun copy(): Rectangle{
         val clone = Rectangle()
@@ -61,9 +64,9 @@ open class Rectangle: Shape() {
 class Brush: Shape(){
     var path = Path()
     var pathString = "M"
-
-    // M100 100L200 200
-
+    init {
+        shapeType = ShapeType.Brush
+    }
 
     fun addMoveTo(startX: Float, startY: Float){
         pathString += "$startX,$startY"
@@ -82,6 +85,9 @@ class Brush: Shape(){
 
 open class BrushRaw: Shape(){
     var pathString = ""
+    init {
+        shapeType = ShapeType.Brush
+    }
 
     fun toBrush(): Brush{
         val brush = Brush()

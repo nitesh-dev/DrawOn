@@ -165,7 +165,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
                     if(currentSelectedTool == ShapeType.Brush){
                         currentDrawingShape = Brush()
-                        currentDrawingShape.shapeType = selectedTool.shapeType
                         currentDrawingShape.fillColor = selectedTool.fillColor
                         currentDrawingShape.strokeColor = selectedTool.strokeColor
                         currentDrawingShape.strokeWidth = selectedTool.strokeWidth
@@ -176,7 +175,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
                     }else if(currentSelectedTool == ShapeType.Rectangle){
                         currentDrawingShape = Rectangle()
-                        currentDrawingShape.shapeType = selectedTool.shapeType
                         currentDrawingShape.fillColor = selectedTool.fillColor
                         currentDrawingShape.strokeColor = selectedTool.strokeColor
                         currentDrawingShape.strokeWidth = selectedTool.strokeWidth
