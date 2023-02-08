@@ -14,4 +14,5 @@
     <string name="feedback">Feedback</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="tab_bar_desc">Tab bar</string>
+    <string name="empty_file_name">Untitled</string>
 </resources>
