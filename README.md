@@ -3,6 +3,7 @@ We are creating a simple drawing app.
 
 Features:
 1) draw rectangles
+2) draw line
 2) more...
 
 ## See the example image
