@@ -15,14 +15,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     private val allShape: ArrayList<Shape> = ArrayList()
     private val toolsData: ArrayList<ToolProperties> = ArrayList()
-    init {
-        toolsData.add(ToolProperties())
-
-        val t = ToolProperties()
-        t.shapeType = ShapeType.Brush
-        t.strokeWidth = 4f
-        toolsData.add(t)
-    }
+    private val tempPath = Path()                   // this path is used by triangle
 
     private var isCurrentShapeDrawing = false
     private var currentDrawingShape = Shape()
@@ -75,7 +68,9 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     private fun drawShape(canvas: Canvas, shape: Shape){
+
         when(shape.shapeType){
+
             ShapeType.Rectangle -> {
                 shape as Rectangle
 
@@ -106,10 +101,10 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 }
 
             }
+
             ShapeType.Brush -> {
                 shape as Brush
                 // drawing stroke if color is not transparent
-                Log.e("hhh", "dd")
                 if(!isColorTransparent(shape.strokeColor)){
 
                     shapePaint.color = shape.strokeColor
@@ -120,34 +115,92 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
             }
 
             ShapeType.Eraser -> {
+                shape as Eraser
+                // drawing stroke if color is not transparent
+
+                if(!isColorTransparent(shape.strokeColor)){
+
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawPath(shape.path, shapePaint)
+                }
 
             }
 
             ShapeType.Line -> {
+                shape as Line
+                // drawing stroke if color is not transparent
+                if(!isColorTransparent(shape.strokeColor)){
 
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawLine(shape.startPos.x, shape.startPos.y, shape.endPos.x, shape.endPos.y, shapePaint)
+                }
             }
 
             ShapeType.Oval -> {
+                shape as Oval
+
+                // drawing fill shape if color is not transparent
+                if(!isColorTransparent(shape.fillColor)) {
+                    shapePaint.color = shape.fillColor
+                    shapePaint.style = Paint.Style.FILL
+                    canvas.drawOval(
+                        shape.startPos.x,
+                        shape.startPos.y,
+                        shape.endPos.x,
+                        shape.endPos.y,
+                        shapePaint
+                    )
+                }
+
+                // drawing stroke if color is not transparent
+                if(!isColorTransparent(shape.strokeColor)){
+
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawOval(shape.startPos.x, shape.startPos.y, shape.endPos.x, shape.endPos.y, shapePaint)
+                }
+
+            }
+
+            ShapeType.Triangle -> {
+                shape as Triangle
+
+                // Note:   (shape.endPos.x - shape.startPos.x) / 2 + shape.startPos.x is used to
+                //         calculate mid-x point in rect
+
+                tempPath.reset()        // clear path for drawing
+                tempPath.moveTo((shape.endPos.x - shape.startPos.x) / 2 + shape.startPos.x, shape.startPos.y)
+                tempPath.lineTo(shape.endPos.x, shape.endPos.y)
+                tempPath.lineTo(shape.startPos.x, shape.endPos.y)
+                tempPath.close()
+
+                // drawing fill if color is not transparent
+                if(!isColorTransparent(shape.fillColor)){
+
+                    shapePaint.color = shape.fillColor
+                    shapePaint.style = Paint.Style.FILL
+                    canvas.drawPath(tempPath, shapePaint)
+                }
+
+                // drawing stroke if color is not transparent
+                if(!isColorTransparent(shape.strokeColor)){
+
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawPath(tempPath, shapePaint)
+                }
 
             }
 
             else -> {}
         }
     }
-
-
-//    private fun actionDown(x: Float, y: Float) {
-//        mPath.reset()
-//        mPath.moveTo(x, y)
-//        mCurX = x
-//        mCurY = y
-//    }
-//
-//    private fun actionMove(x: Float, y: Float) {
-//        mPath.quadTo(mCurX, mCurY, (x + mCurX) / 2, (y + mCurY) / 2)
-//        mCurX = x
-//        mCurY = y
-//    }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
 
@@ -156,7 +209,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
 
-                val selectedTool = getSelectedTool(currentSelectedTool)
+                val selectedTool = getSelectedToolProp(currentSelectedTool)
 
                 if(selectedTool != null){
 
@@ -165,7 +218,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
                     if(currentSelectedTool == ShapeType.Brush){
                         currentDrawingShape = Brush()
-                        currentDrawingShape.fillColor = selectedTool.fillColor
                         currentDrawingShape.strokeColor = selectedTool.strokeColor
                         currentDrawingShape.strokeWidth = selectedTool.strokeWidth
 
@@ -173,13 +225,41 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                         (currentDrawingShape as Brush).path.moveTo(pos.x, pos.y)
                         (currentDrawingShape as Brush).addMoveTo(pos.x, pos.y)
 
-                    }else if(currentSelectedTool == ShapeType.Rectangle){
+                    }else if(currentSelectedTool == ShapeType.Eraser){
+                        currentDrawingShape = Eraser()
+                        currentDrawingShape.strokeColor = selectedTool.strokeColor
+                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+
+                        val pos = screenToCanvas(touchPos)
+                        (currentDrawingShape as Eraser).path.moveTo(pos.x, pos.y)
+                        (currentDrawingShape as Eraser).addMoveTo(pos.x, pos.y)
+
+                    } else if(currentSelectedTool == ShapeType.Rectangle){
                         currentDrawingShape = Rectangle()
                         currentDrawingShape.fillColor = selectedTool.fillColor
                         currentDrawingShape.strokeColor = selectedTool.strokeColor
                         currentDrawingShape.strokeWidth = selectedTool.strokeWidth
-
                         (currentDrawingShape as Rectangle).startPos.setValue(screenToCanvas(touchPos))
+
+                    }else if(currentSelectedTool == ShapeType.Line){
+                        currentDrawingShape = Line()
+                        currentDrawingShape.strokeColor = selectedTool.strokeColor
+                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                        (currentDrawingShape as Line).startPos.setValue(screenToCanvas(touchPos))
+
+                    }else if(currentSelectedTool == ShapeType.Oval){
+                        currentDrawingShape = Oval()
+                        currentDrawingShape.fillColor = selectedTool.fillColor
+                        currentDrawingShape.strokeColor = selectedTool.strokeColor
+                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                        (currentDrawingShape as Oval).startPos.setValue(screenToCanvas(touchPos))
+
+                    }else if(currentSelectedTool == ShapeType.Triangle){
+                        currentDrawingShape = Triangle()
+                        currentDrawingShape.fillColor = selectedTool.fillColor
+                        currentDrawingShape.strokeColor = selectedTool.strokeColor
+                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                        (currentDrawingShape as Triangle).startPos.setValue(screenToCanvas(touchPos))
                     }
 
                 }else{
@@ -218,18 +298,34 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
                 if(isCurrentShapeDrawing){
 
-
                     if(currentDrawingShape.shapeType == ShapeType.Brush){
                         val ctp = screenToCanvas(previousTouch)
                         val endP = screenToCanvas(touchPos)
                         val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
                         (currentDrawingShape as Brush).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
                         (currentDrawingShape as Brush).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
-
                         previousTouch.setValue(touchPos)
-                    }else if(currentDrawingShape.shapeType == ShapeType.Rectangle){
 
+                    }else if(currentDrawingShape.shapeType == ShapeType.Eraser){
+                        val ctp = screenToCanvas(previousTouch)
+                        val endP = screenToCanvas(touchPos)
+                        val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
+                        (currentDrawingShape as Eraser).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
+                        (currentDrawingShape as Eraser).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
+                        previousTouch.setValue(touchPos)
+
+                    } else if(currentDrawingShape.shapeType == ShapeType.Rectangle){
                         (currentDrawingShape as Rectangle).endPos.setValue(screenToCanvas(touchPos))
+
+                    }else if(currentDrawingShape.shapeType == ShapeType.Line){
+                        (currentDrawingShape as Line).endPos.setValue(screenToCanvas(touchPos))
+
+                    }else if(currentDrawingShape.shapeType == ShapeType.Oval){
+                        (currentDrawingShape as Oval).endPos.setValue(screenToCanvas(touchPos))
+
+                    }else if(currentDrawingShape.shapeType == ShapeType.Triangle){
+                        (currentDrawingShape as Triangle).endPos.setValue(screenToCanvas(touchPos))
+
                     }
 
                     invalidate()
@@ -239,19 +335,12 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
             MotionEvent.ACTION_UP -> {
                 if(isCurrentShapeDrawing){
-                    currentDrawingShape.fillColor = Color.RED
 
-                    if(currentDrawingShape.shapeType == ShapeType.Brush){
-                        allShape.add(currentDrawingShape)
-
-                    }else if(currentDrawingShape.shapeType == ShapeType.Rectangle){
-                        allShape.add(currentDrawingShape)
-                    }
+                    allShape.add(currentDrawingShape)
 
                     isCurrentShapeDrawing = false
                     invalidate()
                 }
-
             }
 
             else -> return false
@@ -262,7 +351,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
 
-    private fun getSelectedTool(selectedTool: ShapeType): ToolProperties?{
+    private fun getSelectedToolProp(selectedTool: ShapeType): ToolProperties?{
         for (tool in toolsData){
             if(selectedTool == tool.shapeType){
                 return tool
@@ -276,11 +365,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         return  screenPos - canvasPosition
 
     }
-
-
-
-
-
 
     private fun bitmapToThumbnail(originalBitmap: Bitmap, maxSize: Int): Bitmap {
 
@@ -324,6 +408,17 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     fun getToolData(): ArrayList<ToolProperties>{
         return toolsData
+    }
+
+    fun setToolData(data: ArrayList<ToolProperties>){
+        toolsData.clear()
+        for (prop in data){
+            toolsData.add(prop)
+        }
+    }
+
+    fun setSelectedTool(toolType: ShapeType){
+        currentSelectedTool = toolType
     }
 
     fun getThumbnail(): Bitmap {

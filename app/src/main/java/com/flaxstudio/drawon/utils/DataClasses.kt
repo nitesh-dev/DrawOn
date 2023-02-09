@@ -35,6 +35,12 @@ data class Vector2(var x: Float = 0f, var y: Float = 0f) {
 
 data class Size(var width: Int = 0, var height: Int = 0)
 
+
+
+
+
+
+// -------------------- canvas shape ---------------------------
 open class Shape{
     var shapeType = ShapeType.Rectangle
     var fillColor: Int = Color.RED
@@ -42,24 +48,40 @@ open class Shape{
     var strokeWidth: Float = 2f
 }
 
-open class Rectangle: Shape() {
+class Rectangle: Shape() {
     var startPos = Vector2()
     var endPos = Vector2()
     init {
         shapeType = ShapeType.Rectangle
     }
+}
 
-    fun copy(): Rectangle{
-        val clone = Rectangle()
-        clone.shapeType = shapeType
-        clone.fillColor = fillColor
-        clone.strokeColor = strokeColor
-        clone.strokeWidth = strokeWidth
-        clone.startPos = startPos.copy()
-        clone.endPos = endPos.copy()
-        return clone
+
+class Line: Shape() {
+    var startPos = Vector2()
+    var endPos = Vector2()
+    init {
+        shapeType = ShapeType.Line
     }
 }
+
+class Oval: Shape() {
+    var startPos = Vector2()
+    var endPos = Vector2()
+    init {
+        shapeType = ShapeType.Oval
+    }
+}
+
+class Triangle: Shape() {
+    var startPos = Vector2()
+    var endPos = Vector2()
+    init {
+        shapeType = ShapeType.Triangle
+    }
+}
+
+
 
 class Brush: Shape(){
     var path = Path()
@@ -83,7 +105,7 @@ class Brush: Shape(){
     }
 }
 
-open class BrushRaw: Shape(){
+class BrushRaw: Shape(){
     var pathString = ""
     init {
         shapeType = ShapeType.Brush
@@ -96,6 +118,44 @@ open class BrushRaw: Shape(){
         return brush
     }
 }
+
+
+class Eraser: Shape(){
+    var path = Path()
+    var pathString = "M"
+    init {
+        shapeType = ShapeType.Eraser
+    }
+
+    fun addMoveTo(startX: Float, startY: Float){
+        pathString += "$startX,$startY"
+
+    }
+    fun addQuadTo(cx: Float, cy: Float, endX: Float, endY: Float){
+        pathString += " Q$cx,$cy $endX,$endY"
+    }
+
+    fun toEraserRaw(): EraserRaw{
+        val eraserRaw = EraserRaw()
+        eraserRaw.pathString = pathString
+        return eraserRaw
+    }
+}
+
+class EraserRaw: Shape(){
+    var pathString = ""
+    init {
+        shapeType = ShapeType.Eraser
+    }
+
+    fun toEraser(): Eraser{
+        val eraser = Eraser()
+        eraser.path = PathParser.createPathFromPathData(pathString)
+        eraser.pathString = pathString
+        return eraser
+    }
+}
+
 
 
 
@@ -116,5 +176,6 @@ enum class ShapeType{
     Oval,
     Line,
     Brush,
-    Eraser
+    Eraser,
+    Triangle
 }

@@ -55,7 +55,9 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
             // do the below operation only for path having shape
             if(shapeD.shapeType == ShapeType.Brush){
                 openedProjectData.allSavedShapes.add((shapeD as Brush).toBrushRaw())
-            }else{
+            }else if(shapeD.shapeType == ShapeType.Eraser){
+                openedProjectData.allSavedShapes.add((shapeD as Eraser).toEraserRaw())
+            } else{
                 // for pathless shape only
                 openedProjectData.allSavedShapes.add(shapeD)
             }
@@ -96,6 +98,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         }
     }
 
+
     fun getBitmap(context: Context, isThumbnail: Boolean = false, bitmapId: String = "0"): Bitmap? {
 
         val fileName = if(isThumbnail){
@@ -120,6 +123,10 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         registerSubtype(Shape::class.java, "Shape")
         registerSubtype(Rectangle::class.java, "Rectangle")
         registerSubtype(BrushRaw::class.java, "BrushRaw")
+        registerSubtype(Line::class.java, "Line")
+        registerSubtype(Oval::class.java, "Oval")
+        registerSubtype(EraserRaw::class.java, "EraserRaw")
+        registerSubtype(Triangle::class.java, "Triangle")
         // do more...
 
     }

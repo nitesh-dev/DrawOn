@@ -113,6 +113,18 @@ class HomeFragment : Fragment() {
         // add rectangle
         add(ToolProperties(ShapeType.Rectangle, Color.RED, Color.BLACK, 4f))
 
+        // add Line
+        add(ToolProperties(ShapeType.Line, Color.TRANSPARENT, Color.BLACK, 4f))
+
+        // add Oval
+        add(ToolProperties(ShapeType.Oval, Color.GREEN, Color.BLACK, 4f))
+
+        // add Triangle
+        add(ToolProperties(ShapeType.Triangle, Color.BLUE, Color.BLACK, 4f))
+
+        // add Eraser
+        add(ToolProperties(ShapeType.Eraser, Color.TRANSPARENT, Color.WHITE, 80f))
+
         // do more...
     }
 

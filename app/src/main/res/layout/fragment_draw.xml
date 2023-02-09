@@ -37,7 +37,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:background="@android:color/transparent"
                 android:contentDescription="@string/app_name"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
@@ -88,12 +87,13 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/corner_rounded_background"
+        android:clipToPadding="false"
         android:orientation="horizontal"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
@@ -101,89 +101,78 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageButton
-            android:id="@+id/btn_save8"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:src="@drawable/icon_setting"
-            app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-            app:layout_constraintEnd_toEndOf="@+id/toolbar"
-            app:layout_constraintTop_toTopOf="@+id/toolbar" />
+        <Button
+            android:id="@+id/toolProperties"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:icon="@drawable/icon_setting_line" />
 
-        <ImageButton
-            android:id="@+id/btn_save6"
+        <HorizontalScrollView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:src="@drawable/icon_pencil"
-            app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-            app:layout_constraintEnd_toEndOf="@+id/toolbar"
-            app:layout_constraintTop_toTopOf="@+id/toolbar" />
+            android:fadeScrollbars="true"
+            android:isScrollContainer="true"
+            android:scrollbarStyle="outsideOverlay">
 
-        <ImageButton
-            android:id="@+id/btn_save5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:src="@drawable/icon_line"
-            app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-            app:layout_constraintEnd_toEndOf="@+id/toolbar"
-            app:layout_constraintTop_toTopOf="@+id/toolbar" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toolbarGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:checkedButton="@id/toolRect"
+                app:selectionRequired="true"
+                app:singleSelection="true">
 
-        <ImageButton
-            android:id="@+id/btn_save4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:src="@drawable/icon_square"
-            app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-            app:layout_constraintEnd_toEndOf="@+id/toolbar"
-            app:layout_constraintTop_toTopOf="@+id/toolbar" />
+                <Button
+                    android:id="@+id/toolBrush"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_pencil" />
 
-        <ImageButton
-            android:id="@+id/btn_save3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:src="@drawable/icon_circle"
-            app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-            app:layout_constraintEnd_toEndOf="@+id/toolbar"
-            app:layout_constraintTop_toTopOf="@+id/toolbar" />
+                <Button
+                    android:id="@+id/toolEraser"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_eraser" />
 
-        <ImageButton
-            android:id="@+id/btn_save7"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/app_name"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:src="@drawable/icon_triangle"
-            app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-            app:layout_constraintEnd_toEndOf="@+id/toolbar"
-            app:layout_constraintTop_toTopOf="@+id/toolbar" />
+                <Button
+                    android:id="@+id/toolRect"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_square" />
+
+                <Button
+                    android:id="@+id/toolLine"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_line" />
+
+                <Button
+                    android:id="@+id/toolOval"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:icon="@drawable/icon_circle" />
+
+                <Button
+                    android:id="@+id/toolTriangle"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_triangle" />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </HorizontalScrollView>
     </LinearLayout>
 
 
