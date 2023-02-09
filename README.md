@@ -1,10 +1,14 @@
 # DrawOn
 We are creating a simple drawing app.
 
-Features:
-1) draw rectangles
-2) draw line
-2) more...
+Tools:
+1) rectangle
+2) line
+3) oval
+4) brush
+5) eraser
+6) triangle
+7) more...
 
 ## See the example image
 
