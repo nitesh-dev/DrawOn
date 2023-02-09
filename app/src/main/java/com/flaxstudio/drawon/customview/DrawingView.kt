@@ -19,7 +19,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     private var isCurrentShapeDrawing = false
     private var currentDrawingShape = Shape()
-    private var currentSelectedTool = ShapeType.Brush
+    private var currentSelectedTool = ShapeType.Rectangle
 
     private var canvasPosition = Vector2()
     private val whiteBoardRect = Rect(0, 0, 1080, 720)
