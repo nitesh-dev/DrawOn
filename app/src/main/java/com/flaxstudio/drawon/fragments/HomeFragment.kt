@@ -39,22 +39,10 @@ class HomeFragment : Fragment() {
 
 
 
-    private var tempArr = ArrayList<Project>()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        mainActivityViewModel.allProjects.observe(viewLifecycleOwner){ data ->
-            // use this for recycler view
-            println(data.size)
-            tempArr = data as ArrayList<Project>
-
-            //openProject(2)
-        }
-
-        setUpAppData()
-
+        addListeners()
     }
 
     private fun addListeners(){
@@ -65,67 +53,13 @@ class HomeFragment : Fragment() {
     }
 
 
-    // the below function will load app data
-    private fun setUpAppData(){
-
-        createNewProject("Untitled", Size(500, 500))
-
-    }
     private fun setupLayoutWithViewPager() {
         binding.viewPager.adapter = HomePagerAdapter(this)
         TabLayoutMediator(binding.tabBarLayout , binding.viewPager){ tab , position ->
             tab.text = tabTitles[position]
+
+
         }.attach()
-    }
-
-
-
-    private fun createNewProject(projectName: String, whiteBoardSize: Size){
-        val emptyShapeData = ArrayList<Shape>()
-        val projectId = mainActivityViewModel.generateUniqueId()
-        val newProject = Project(0, projectId, projectName, false, "", whiteBoardSize.width, whiteBoardSize.height)
-
-        mainActivityViewModel.createProject(newProject){
-
-            mainActivityViewModel.openedProject = newProject
-            mainActivityViewModel.saveProject(requireContext(), emptyShapeData, defaultToolbarProperties)
-
-            val emptyThumbnail = Bitmap.createBitmap(128, 128, Bitmap.Config.RGB_565)
-            mainActivityViewModel.saveBitmap(requireContext(), emptyThumbnail, true)
-            findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
-        }
-
-    }
-
-    private fun openProject(projectIndex: Int){
-
-        mainActivityViewModel.openedProject = tempArr[projectIndex]
-        // do something here....
-        findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
-    }
-
-
-
-    private val defaultToolbarProperties = ArrayList<ToolProperties>().apply {
-        // add brush
-        add(ToolProperties(ShapeType.Brush, Color.TRANSPARENT, Color.BLACK, 4f))
-
-        // add rectangle
-        add(ToolProperties(ShapeType.Rectangle, Color.RED, Color.BLACK, 4f))
-
-        // add Line
-        add(ToolProperties(ShapeType.Line, Color.TRANSPARENT, Color.BLACK, 4f))
-
-        // add Oval
-        add(ToolProperties(ShapeType.Oval, Color.GREEN, Color.BLACK, 4f))
-
-        // add Triangle
-        add(ToolProperties(ShapeType.Triangle, Color.BLUE, Color.BLACK, 4f))
-
-        // add Eraser
-        add(ToolProperties(ShapeType.Eraser, Color.TRANSPARENT, Color.WHITE, 80f))
-
-        // do more...
     }
 
 }

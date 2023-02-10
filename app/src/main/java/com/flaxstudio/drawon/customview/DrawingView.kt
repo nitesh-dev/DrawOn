@@ -429,7 +429,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         bitmapCanvas.drawRect(whiteBoardRect, whiteBoardPaint)
         for (shape in allShape) drawShape(bitmapCanvas, shape)
 
-        return bitmapToThumbnail(bitmap, 256)
+        return bitmapToThumbnail(bitmap, 512)
     }
 
 }

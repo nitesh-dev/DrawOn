@@ -3,7 +3,10 @@ package com.flaxstudio.drawon.viewmodels
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.flaxstudio.drawon.utils.*
 import com.google.gson.GsonBuilder
@@ -11,10 +14,37 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivityViewModel(private val repository: ProjectRepository): ViewModel() {
 
     lateinit var openedProject: Project
+
+    val defaultToolbarProperties = ArrayList<ToolProperties>().apply {
+        // add brush
+        add(ToolProperties(ShapeType.Brush, Color.TRANSPARENT, Color.BLACK, 4f))
+
+        // add rectangle
+        add(ToolProperties(ShapeType.Rectangle, Color.RED, Color.BLACK, 4f))
+
+        // add Line
+        add(ToolProperties(ShapeType.Line, Color.TRANSPARENT, Color.BLACK, 4f))
+
+        // add Oval
+        add(ToolProperties(ShapeType.Oval, Color.GREEN, Color.BLACK, 4f))
+
+        // add Triangle
+        add(ToolProperties(ShapeType.Triangle, Color.BLUE, Color.BLACK, 4f))
+
+        // add Eraser
+        add(ToolProperties(ShapeType.Eraser, Color.TRANSPARENT, Color.WHITE, 80f))
+
+        // do more...
+    }
 
     //room
     val allProjects: LiveData<List<Project>> = repository.allProjects.asLiveData()

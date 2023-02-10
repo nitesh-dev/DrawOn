@@ -65,12 +65,11 @@
         android:layout_width="0dp"
         android:layout_height="35dp"
         android:layout_margin="16dp"
-        android:layout_marginTop="16dp"
         android:background="@drawable/tab_background"
         android:contentDescription="@string/tab_bar_desc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/app_bar"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar"
         app:tabGravity="fill"
         app:tabIndicator="@drawable/tab_background"
         app:tabIndicatorColor="@color/dark_blue"
@@ -78,9 +77,9 @@
         app:tabIndicatorGravity="stretch"
         app:tabInlineLabel="true"
         app:tabMode="fixed"
-        app:tabTextColor="@color/dark_blue"
         app:tabRippleColor="@null"
-        app:tabSelectedTextColor="@color/white">
+        app:tabSelectedTextColor="@color/white"
+        app:tabTextColor="@color/dark_blue">
 
     </com.google.android.material.tabs.TabLayout>
 
@@ -88,10 +87,11 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tabBar_layout"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabBar_layout" />
 
 
 
