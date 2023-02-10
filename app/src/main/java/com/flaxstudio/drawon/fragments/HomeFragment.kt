@@ -1,20 +1,16 @@
 package com.flaxstudio.drawon.fragments
 
-import android.graphics.Bitmap
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.flaxstudio.drawon.Adapters.HomePagerAdapter
+import com.flaxstudio.drawon.adapters.HomePagerAdapter
 import com.flaxstudio.drawon.ProjectApplication
 import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.databinding.FragmentHomeBinding
-import com.flaxstudio.drawon.utils.*
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModel
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator

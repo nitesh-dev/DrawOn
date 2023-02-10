@@ -1,7 +1,6 @@
 package com.flaxstudio.drawon.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.flaxstudio.drawon.Adapters.HomeRecyclerViewAdapter
-import com.flaxstudio.drawon.Adapters.SpaceItemDecoration
+import com.flaxstudio.drawon.adapters.HomeRecyclerViewAdapter
+import com.flaxstudio.drawon.adapters.SpaceItemDecoration
 import com.flaxstudio.drawon.ProjectApplication
 import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.databinding.FragmentHomeAllBinding
-import com.flaxstudio.drawon.databinding.FragmentHomeBinding
 import com.flaxstudio.drawon.utils.CustomDateTime
 import com.flaxstudio.drawon.utils.Project
 import com.flaxstudio.drawon.utils.Shape

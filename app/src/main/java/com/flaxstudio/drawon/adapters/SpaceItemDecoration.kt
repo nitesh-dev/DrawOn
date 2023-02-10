@@ -1,4 +1,4 @@
-package com.flaxstudio.drawon.Adapters
+package com.flaxstudio.drawon.adapters
 
 import android.graphics.Rect
 import android.view.View

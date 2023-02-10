@@ -1,4 +1,4 @@
-package com.flaxstudio.drawon.Adapters
+package com.flaxstudio.drawon.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
