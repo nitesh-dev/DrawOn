@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.flaxstudio.drawon.ProjectApplication
 import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.databinding.FragmentDrawBinding
@@ -34,7 +35,9 @@ class DrawFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.saveButton.setOnClickListener{
+            findNavController().navigate(R.id.action_drawFragment_to_homeFragment)
+        }
 
         addListeners()
         loadUiData()

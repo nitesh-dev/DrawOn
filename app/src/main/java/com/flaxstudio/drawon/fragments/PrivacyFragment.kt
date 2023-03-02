@@ -7,30 +7,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.flaxstudio.drawon.R
-import com.flaxstudio.drawon.databinding.FragmentSettingsBinding
+import com.flaxstudio.drawon.databinding.FragmentPrivacyBinding
 
 
-class SettingsFragment : Fragment() {
-    private lateinit var binding: FragmentSettingsBinding
+class PrivacyFragment : Fragment() {
+    private lateinit var binding:FragmentPrivacyBinding
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentSettingsBinding.inflate(layoutInflater,container,false)
+        binding = FragmentPrivacyBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Privacy Policy container clicked
-        binding.containerPrivacyPolicy.setOnClickListener {
-            findNavController().navigate(R.id.action_settingsFragment_to_privacyFragment)
-        }
-        // Bck Clicked
         binding.btnBack.setOnClickListener{
-            findNavController().navigate(R.id.action_settingsFragment_to_homeFragment)
+            findNavController().navigate(R.id.action_privacyFragment_to_settingsFragment)
         }
     }
 
