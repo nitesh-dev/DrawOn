@@ -19,9 +19,9 @@ class HomePagerAdapter(fragment : Fragment) : FragmentStateAdapter(fragment) {
         Log.e("+++++++", "hello")
        return when(position){
            0 -> HomeFragmentAll()
-           1 -> HomeFragmentToday()
-           2 -> HomeFragmentWeek()
-           else -> HomeFragmentMonth()
+           1 -> HomeFragmentAll()
+           2 -> HomeFragmentAll()
+           else -> HomeFragmentAll()
        }
     }
 }
