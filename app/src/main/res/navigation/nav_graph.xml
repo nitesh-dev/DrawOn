@@ -17,10 +17,18 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_left_to_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_right_to_right" />
         <action
             android:id="@+id/action_homeFragment_to_drawFragment"
-            app:destination="@id/drawFragment" />
+            app:destination="@id/drawFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_left_to_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_right_to_right" />
     </fragment>
     <fragment
         android:id="@+id/drawFragment"

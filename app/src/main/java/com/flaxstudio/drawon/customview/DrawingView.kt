@@ -20,10 +20,10 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private var isCurrentShapeDrawing = false
     private var currentDrawingShape = Shape()
     private var currentSelectedTool = ShapeType.Rectangle
+    private var isRedrawAllowed = true
 
     private var canvasPosition = Vector2()
     private val whiteBoardRect = Rect(0, 0, 1080, 720)
-    private val canvasSize = Size()
 
     private var previousTouch = Vector2()
 
@@ -43,29 +43,41 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         strokeCap = Paint.Cap.ROUND
     }
 
+    // Note: Update needed
+    private val catchBitmap = Bitmap.createBitmap(1280, 720, Bitmap.Config.ARGB_8888)
+    private val canvasBitmap = Canvas(catchBitmap)
+    private var totalShapeDrawn = 0
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         canvas.translate(canvasPosition.x, canvasPosition.y)
         canvas.clipRect(whiteBoardRect)
         canvas.drawRect(whiteBoardRect, whiteBoardPaint)
 
-        for (shape in allShape){
-            drawShape(canvas, shape)
-        }
+        if(isRedrawAllowed){
+            onDrawBitmap(canvasBitmap, true)
+            isRedrawAllowed = false
+        }else if(totalShapeDrawn < allShape.size) onDrawBitmap(canvasBitmap)
 
+        canvas.drawBitmap(catchBitmap, 0F, 0F, null)
+
+        // drawing current drawing shape
         if(isCurrentShapeDrawing){
             drawShape(canvas, currentDrawingShape)
         }
 
+    }
+    private fun onDrawBitmap(canvas: Canvas, isDrawAll: Boolean = false){
 
-        // this is only used to find the canvas size, it will only called 1 time
-        if(canvasSize.width == 0){
-            canvasSize.width = this.width
-            canvasSize.height = this.height
-        }
+        if(isDrawAll){
+            for (shape in allShape){
+                drawShape(canvas, shape)
+            }
+        }else drawShape(canvas, allShape.last())
+
+        totalShapeDrawn = allShape.size
 
     }
+
 
     private fun drawShape(canvas: Canvas, shape: Shape){
 
@@ -351,6 +363,8 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
 
+
+
     private fun getSelectedToolProp(selectedTool: ShapeType): ToolProperties?{
         for (tool in toolsData){
             if(selectedTool == tool.shapeType){
@@ -422,7 +436,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     fun getThumbnail(): Bitmap {
-        val bitmap = Bitmap.createBitmap(canvasSize.width, canvasSize.height, Bitmap.Config.ARGB_8888)
+        val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
         val bitmapCanvas = Canvas(bitmap)
 
         bitmapCanvas.clipRect(whiteBoardRect)
