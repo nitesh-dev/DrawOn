@@ -2,6 +2,7 @@ package com.flaxstudio.drawon.utils
 
 import android.graphics.Color
 import android.graphics.Path
+import android.util.Log
 import androidx.core.graphics.PathParser
 
 data class Vector2(var x: Float = 0f, var y: Float = 0f) {
@@ -125,6 +126,7 @@ class Eraser: Shape(){
     var pathString = "M"
     init {
         shapeType = ShapeType.Eraser
+        strokeColor = Color.WHITE
     }
 
     fun addMoveTo(startX: Float, startY: Float){
@@ -138,6 +140,7 @@ class Eraser: Shape(){
     fun toEraserRaw(): EraserRaw{
         val eraserRaw = EraserRaw()
         eraserRaw.pathString = pathString
+        eraserRaw.strokeWidth = strokeWidth
         return eraserRaw
     }
 }
@@ -146,11 +149,14 @@ class EraserRaw: Shape(){
     var pathString = ""
     init {
         shapeType = ShapeType.Eraser
+        strokeColor = Color.WHITE
     }
 
     fun toEraser(): Eraser{
         val eraser = Eraser()
         eraser.path = PathParser.createPathFromPathData(pathString)
+        eraser.strokeWidth = strokeWidth
+        eraser.strokeColor = strokeColor
         eraser.pathString = pathString
         return eraser
     }

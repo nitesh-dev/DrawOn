@@ -51,16 +51,16 @@ class HomeFragmentAll : Fragment(R.layout.fragment_home_all){
         mainActivityViewModel.allProjects.observe(viewLifecycleOwner){ data ->
             // use this for recycler view
 
-            adapter.clearProjects()
+//            adapter.clearProjects()
             for(project in data as ArrayList<Project>){
 
 //                if(cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.All){
 //
 //                }
                 adapter.addProject(project)
+                adapter.notifyItemInserted(adapter.itemCount - 1)
             }
 
-            adapter.notifyDataSetChanged()
         }
     }
 
