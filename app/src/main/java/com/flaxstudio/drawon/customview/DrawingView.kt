@@ -365,7 +365,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
 
 
-    private fun getSelectedToolProp(selectedTool: ShapeType): ToolProperties?{
+    fun getSelectedToolProp(selectedTool: ShapeType): ToolProperties?{
         for (tool in toolsData){
             if(selectedTool == tool.shapeType){
                 return tool
@@ -429,6 +429,18 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         for (prop in data){
             toolsData.add(prop)
         }
+    }
+
+    fun updateToolData(tempToolData: ToolProperties){
+        for (index in 0..toolsData.lastIndex){
+            if(tempToolData.shapeType == toolsData[index].shapeType){
+
+                // updating
+                toolsData[index] = tempToolData
+                return
+            }
+        }
+
     }
 
     fun setSelectedTool(toolType: ShapeType){
