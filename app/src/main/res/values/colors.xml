@@ -10,6 +10,7 @@
 <!--    Custom colors used in app -->
     <color name="white">#FFFFFFFF</color>
     <color name="dark_blue">#001662</color>
+    <color name="light_blue">#CDD8FF</color>
     <color name="very_light_blue">#F5F7FF</color>
     <color name="light_gray">#F1EDED</color>
 
