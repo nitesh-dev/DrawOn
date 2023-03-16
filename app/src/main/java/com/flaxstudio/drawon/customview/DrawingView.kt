@@ -47,6 +47,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private val catchBitmap = Bitmap.createBitmap(1280, 720, Bitmap.Config.ARGB_8888)
     private val canvasBitmap = Canvas(catchBitmap)
     private var totalShapeDrawn = 0
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.translate(canvasPosition.x, canvasPosition.y)
@@ -54,7 +55,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         canvas.drawRect(whiteBoardRect, whiteBoardPaint)
 
         if(isRedrawAllowed){
-            onDrawBitmap(canvasBitmap, true)
+//            onDrawBitmap(canvasBitmap, true)
             isRedrawAllowed = false
         }else if(totalShapeDrawn < allShape.size) onDrawBitmap(canvasBitmap)
 
@@ -77,7 +78,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         totalShapeDrawn = allShape.size
 
     }
-
 
     private fun drawShape(canvas: Canvas, shape: Shape){
 
@@ -128,16 +128,13 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
             ShapeType.Eraser -> {
                 shape as Eraser
-                // drawing stroke if color is not transparent
 
-                if(!isColorTransparent(shape.strokeColor)){
+                Log.e("======", "hello")
 
-                    shapePaint.color = shape.strokeColor
-                    shapePaint.strokeWidth = shape.strokeWidth
-                    shapePaint.style = Paint.Style.STROKE
-                    canvas.drawPath(shape.path, shapePaint)
-                }
-
+                shapePaint.color = shape.strokeColor
+                shapePaint.strokeWidth = shape.strokeWidth
+                shapePaint.style = Paint.Style.STROKE
+                canvas.drawPath(shape.path, shapePaint)
             }
 
             ShapeType.Line -> {
@@ -363,6 +360,10 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
 
+    suspend fun updateBitmapDrawing(){
+        onDrawBitmap(canvasBitmap, true)
+    }
+
 
 
     fun getSelectedToolProp(selectedTool: ShapeType): ToolProperties?{
@@ -395,8 +396,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         val alpha = color shr 24 and 0xff
         return alpha == 0
     }
-
-
 
 
 
