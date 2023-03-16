@@ -14,6 +14,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.abhishek.colorpicker.ColorPickerDialog
 import com.flaxstudio.drawon.ProjectApplication
 import com.flaxstudio.drawon.R
@@ -24,6 +25,9 @@ import com.flaxstudio.drawon.utils.ShapeType
 import com.flaxstudio.drawon.utils.ToolProperties
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModel
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class DrawFragment : Fragment() {
@@ -41,12 +45,6 @@ class DrawFragment : Fragment() {
         return binding.root
     }
 
-
-    //        val dialog = ColorPickerDialog()
-//        dialog.setOnOkCancelListener { isOk, color ->
-//            Log.e("======", color.toString())
-//        }
-//        dialog.show(supportFragmentManager)
 
     private lateinit var colorPickerDialog: ColorPickerDialog
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -263,6 +261,13 @@ class DrawFragment : Fragment() {
 
         binding.fileName.text = mainActivityViewModel.openedProject.projectName
         binding.favCheckBox.isChecked = mainActivityViewModel.openedProject.isFavourite
+
+        lifecycleScope.launch(Dispatchers.Default) {
+            binding.drawingView.updateBitmapDrawing()
+            withContext(Dispatchers.Main){
+                binding.drawingView.invalidate()
+            }
+        }
 
     }
 
