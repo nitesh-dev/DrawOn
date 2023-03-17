@@ -9,7 +9,9 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.flaxstudio.drawon.utils.*
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,9 +49,13 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
     }
 
     //room
-    val allProjects: LiveData<List<Project>> = repository.allProjects.asLiveData()
 
-
+    fun getAllProjects(callback: (List<Project>) -> Unit) = viewModelScope.launch(Dispatchers.Default){
+        val projects = repository.getAllProjects()
+        withContext(Dispatchers.Main){
+            callback(projects)
+        }
+    }
     fun createProject(project: Project, callback: () -> Unit) = viewModelScope.launch(Dispatchers.Default) {
         repository.insert(project)
         withContext(Dispatchers.Main){
@@ -75,50 +81,27 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
 
 
     // save and load functions
-    fun saveProject(context: Context, shapeData: ArrayList<Shape>, toolData: ArrayList<ToolProperties>){
-
-        val openedProjectData = ProjectData()
-
-        // converting all class object to serializable object
-        for (shapeD in shapeData){
-
-            // do the below operation only for path having shape
-            if(shapeD.shapeType == ShapeType.Brush){
-                openedProjectData.allSavedShapes.add((shapeD as Brush).toBrushRaw())
-            }else if(shapeD.shapeType == ShapeType.Eraser){
-                openedProjectData.allSavedShapes.add((shapeD as Eraser).toEraserRaw())
-            } else{
-                // for pathless shape only
-                openedProjectData.allSavedShapes.add(shapeD)
-            }
-        }
-
-        // adding all tools properties
-        openedProjectData.toolsData.addAll(toolData)
+    fun saveProject(context: Context, bitmap: Bitmap?, toolData: ArrayList<ToolProperties>){
 
         // saving
-        val gson = GsonBuilder()
-            .registerTypeAdapterFactory(typeAdapterFactory)
-            .create()
-        val json = gson.toJson(openedProjectData)
+        val json = Gson().toJson(toolData)
         Log.e("==========", json)
+
+        if(bitmap != null) saveBitmap(context, bitmap, false, openedProject.projectId)
 
         saveProjectLocally(context, openedProject.projectId, json)
     }
 
-    fun loadProject(context: Context): ProjectData {
+    fun loadProject(context: Context): ArrayList<ToolProperties>? {
 
-        val gson = GsonBuilder()
-            .registerTypeAdapterFactory(typeAdapterFactory)
-            .create()
         val json = loadProjectFromLocal(context, openedProject.projectId)
-        return gson.fromJson(json, ProjectData::class.java)
+        return Gson().fromJson(json, object : TypeToken<ArrayList<ToolProperties>>() {}.type)
     }
 
     fun saveBitmap(context: Context, bitmap: Bitmap, isThumbnail: Boolean = false, bitmapId: String = "0"){
 
         val fileName = if(isThumbnail){
-            "${openedProject.projectId}.png"
+            "${openedProject.projectId}thumb.png"
         } else {
             "${bitmapId}.png"
         }
@@ -132,7 +115,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
     fun getBitmap(context: Context, isThumbnail: Boolean = false, bitmapId: String = "0"): Bitmap? {
 
         val fileName = if(isThumbnail){
-            "${openedProject.projectId}.png"
+            "${openedProject.projectId}thumb.png"
         } else {
             "${bitmapId}.png"
         }
@@ -147,19 +130,6 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         return System.currentTimeMillis().toString()
     }
 
-
-    // for converting inheritance class to json
-    private val typeAdapterFactory = RuntimeTypeAdapterFactory.of(Shape::class.java, "type").apply {
-        registerSubtype(Shape::class.java, "Shape")
-        registerSubtype(Rectangle::class.java, "Rectangle")
-        registerSubtype(BrushRaw::class.java, "BrushRaw")
-        registerSubtype(Line::class.java, "Line")
-        registerSubtype(Oval::class.java, "Oval")
-        registerSubtype(EraserRaw::class.java, "EraserRaw")
-        registerSubtype(Triangle::class.java, "Triangle")
-        // do more...
-
-    }
 
     private fun saveProjectLocally(context: Context, jsonFileName: String, content: String){
         context.openFileOutput("$jsonFileName.json", Context.MODE_PRIVATE).use {

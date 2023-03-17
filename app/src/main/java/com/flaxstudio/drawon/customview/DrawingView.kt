@@ -33,6 +33,8 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     private var previousTouch = Vector2()
 
+   var projectSavedBitmap: Bitmap? = null
+
 
     private var whiteBoardPaint = Paint().apply {
         isAntiAlias = true
@@ -62,7 +64,10 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         super.onDraw(canvas)
         canvas.translate(canvasPosition.x, canvasPosition.y)
         canvas.clipRect(whiteBoardRect)
-        canvas.drawRect(whiteBoardRect, whiteBoardPaint)
+
+        // this will draw white screen if the project is new.
+        // Otherwise it will draw saved project bitmap.
+        if(projectSavedBitmap == null) canvas.drawRect(whiteBoardRect, whiteBoardPaint) else canvas.drawBitmap(projectSavedBitmap!!, 0F, 0F, null)
 
         if(isRedrawAllowed){
 
@@ -405,27 +410,22 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         return alpha == 0
     }
 
+    fun getCanvasBitmap(): Bitmap {
+        val bitmap = Bitmap.createBitmap(whiteBoardRect.width(), whiteBoardRect.height(), Bitmap.Config.ARGB_8888)
+        val bitmapCanvas = Canvas(bitmap)
+
+        //bitmapCanvas.clipRect(whiteBoardRect)
+
+        if(projectSavedBitmap == null) bitmapCanvas.drawRect(whiteBoardRect, whiteBoardPaint) else {
+            bitmapCanvas.drawBitmap(projectSavedBitmap!!, 0f, 0f, null)
+        }
+        for (shape in allShape) drawShape(bitmapCanvas, shape)
+        return bitmap
+    }
+
 
 
     // the below functions will be called from fragment or activity
-
-    fun setDrawnShapes(shapeData: Shape){
-        allShape.add(shapeData)
-    }
-
-    fun getDrawnShapes(): ArrayList<Shape>{
-        val tempShapes = ArrayList<Shape>()
-
-        for (shape in allShape){
-            if(shape.shapeType == ShapeType.Brush){
-                shape as Brush
-                tempShapes.add(shape.toBrushRaw())
-            }else{
-                tempShapes.add(shape)
-            }
-        }
-        return allShape
-    }
 
     fun getToolData(): ArrayList<ToolProperties>{
         return toolsData
@@ -447,7 +447,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 return
             }
         }
-
     }
 
     fun setSelectedTool(toolType: ShapeType){
@@ -455,14 +454,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     fun getThumbnail(): Bitmap {
-        val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
-        val bitmapCanvas = Canvas(bitmap)
-
-        bitmapCanvas.clipRect(whiteBoardRect)
-        bitmapCanvas.drawRect(whiteBoardRect, whiteBoardPaint)
-        for (shape in allShape) drawShape(bitmapCanvas, shape)
-
-        return bitmapToThumbnail(bitmap, 512)
+        return bitmapToThumbnail(getCanvasBitmap(), 512)
     }
 
 

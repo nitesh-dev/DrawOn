@@ -3,6 +3,7 @@ package com.flaxstudio.drawon.fragments
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +29,7 @@ import com.flaxstudio.drawon.viewmodels.MainActivityViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 
 class DrawFragment : Fragment() {
@@ -62,22 +64,25 @@ class DrawFragment : Fragment() {
     private lateinit var panelCloseAnim: Animation
     private lateinit var panelOpenAnim: Animation
 
-    private fun initialiseAnimation(){
+    private fun initialiseAnimation() {
         panelCloseAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.prop_panel_close)
         panelOpenAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.prop_panel_open)
     }
 
 
-
     private var isPropertiesPanelVisible = false
     private var isFillColorContainerSelected = false
 
-    private fun addListeners(){
+    private fun addListeners() {
 
         // save project
         binding.saveButton.setOnClickListener {
 
-            mainActivityViewModel.saveProject(requireContext() , binding.drawingView.getDrawnShapes(), binding.drawingView.getToolData())
+            mainActivityViewModel.saveProject(
+                requireContext(),
+                binding.drawingView.getCanvasBitmap(),
+                binding.drawingView.getToolData()
+            )
 
             // creating & saving thumbnail
             val bitmap = binding.drawingView.getThumbnail()
@@ -128,15 +133,15 @@ class DrawFragment : Fragment() {
         colorPickerDialog.setOnOkCancelListener { isOk, color ->
 
             // setting color
-            if(isOk){
-                if(isFillColorContainerSelected){
+            if (isOk) {
+                if (isFillColorContainerSelected) {
                     tempToolProperties!!.fillColor = color
 
                     // fill
                     binding.fillColorView.setColor(tempToolProperties!!.fillColor)
                     binding.fillColorText.text = colorToHex(tempToolProperties!!.fillColor)
 
-                }else{
+                } else {
                     tempToolProperties!!.strokeColor = color
 
                     // stroke
@@ -149,12 +154,12 @@ class DrawFragment : Fragment() {
         }
 
         // properties panel listeners
-        binding.strokeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        binding.strokeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                if(tempToolProperties == null) return
-                if(seekBar == null) return
+                if (tempToolProperties == null) return
+                if (seekBar == null) return
                 tempToolProperties!!.strokeWidth = seekBar.progress.toFloat()
                 binding.drawingView.updateToolData(tempToolProperties!!)
             }
@@ -189,21 +194,23 @@ class DrawFragment : Fragment() {
         }
 
         binding.drawingView.setUndoRedoListener { isUndoVisible, isRedoVisible ->
-            if(isUndoVisible) binding.undoButton.visibility = View.VISIBLE else binding.undoButton.visibility = View.INVISIBLE
-            if(isRedoVisible) binding.redoButton.visibility = View.VISIBLE else binding.redoButton.visibility = View.INVISIBLE
+            if (isUndoVisible) binding.undoButton.visibility =
+                View.VISIBLE else binding.undoButton.visibility = View.INVISIBLE
+            if (isRedoVisible) binding.redoButton.visibility =
+                View.VISIBLE else binding.redoButton.visibility = View.INVISIBLE
         }
 
     }
 
     private var tempToolProperties: ToolProperties? = null
-    private fun updatePropertiesPanelData(toolType: ShapeType){
+    private fun updatePropertiesPanelData(toolType: ShapeType) {
 
         tempToolProperties = binding.drawingView.getSelectedToolProp(toolType) ?: return
 
         binding.selectedTool.text = toolType.toString()
         binding.strokeColorParent.visibility = View.VISIBLE
 
-        when(toolType){
+        when (toolType) {
             ShapeType.Brush -> {
                 binding.fillColorParent.visibility = View.GONE
 
@@ -239,54 +246,57 @@ class DrawFragment : Fragment() {
         binding.strokeSeekBar.progress = tempToolProperties!!.strokeWidth.toInt()
 
     }
-    private fun togglePropertiesPanel(){
+
+    private fun togglePropertiesPanel() {
         binding.propertiesPanel.visibility = View.VISIBLE
-        if(isPropertiesPanelVisible){
+        if (isPropertiesPanelVisible) {
             isPropertiesPanelVisible = false
             binding.propertiesPanel.startAnimation(panelCloseAnim)
-        }else{
+        } else {
             isPropertiesPanelVisible = true
             binding.propertiesPanel.startAnimation(panelOpenAnim)
         }
     }
 
-    private fun colorToHex(colorInt: Int): String{
+    private fun colorToHex(colorInt: Int): String {
         // hex color
         return String.format("#%06X", (0xFFFFFF and colorInt))
     }
 
 
     // ui update work here
-    private fun loadUiData(){
+    private fun loadUiData() {
 
-        val projectData = mainActivityViewModel.loadProject(requireContext())
-        for (rawShape in projectData.allSavedShapes){
+        val toolsData = mainActivityViewModel.loadProject(requireContext())
 
-            // do same for all the shapes which store path data
-            if(rawShape.shapeType == ShapeType.Brush){
-                binding.drawingView.setDrawnShapes((rawShape as BrushRaw).toBrush())
-
-            }else if(rawShape.shapeType == ShapeType.Eraser){
-                binding.drawingView.setDrawnShapes((rawShape as EraserRaw).toEraser())
-
-            } else{
-                binding.drawingView.setDrawnShapes(rawShape)
-            }
+        if (toolsData != null) {
+            binding.drawingView.setToolData(toolsData)
         }
-
-        binding.drawingView.setToolData(projectData.toolsData)
 
         binding.fileName.text = mainActivityViewModel.openedProject.projectName
         binding.favCheckBox.isChecked = mainActivityViewModel.openedProject.isFavourite
 
-        updateDrawingCanvas()
+        // loading saved bitmap
+        lifecycleScope.launch(Dispatchers.Default) {
+
+            val bitmap: Bitmap? = try {
+                    mainActivityViewModel.getBitmap(requireContext(), false, mainActivityViewModel.openedProject.projectId)
+                }catch (ex: IOException) {
+                    null
+                }
+            binding.drawingView.projectSavedBitmap = bitmap
+
+            withContext(Dispatchers.Main) {
+                binding.drawingView.invalidate()
+            }
+        }
 
     }
 
-    private fun updateDrawingCanvas(){
+    private fun updateDrawingCanvas() {
         lifecycleScope.launch(Dispatchers.Default) {
             binding.drawingView.reDraw()
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 binding.drawingView.invalidate()
             }
         }
