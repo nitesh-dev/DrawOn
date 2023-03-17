@@ -176,6 +176,23 @@ class DrawFragment : Fragment() {
             colorPickerDialog.show(parentFragmentManager)
         }
 
+
+        // redo and undo
+        binding.undoButton.setOnClickListener {
+            binding.drawingView.undo()
+            updateDrawingCanvas()
+        }
+
+        binding.redoButton.setOnClickListener {
+            binding.drawingView.redo()
+            updateDrawingCanvas()
+        }
+
+        binding.drawingView.setUndoRedoListener { isUndoVisible, isRedoVisible ->
+            if(isUndoVisible) binding.undoButton.visibility = View.VISIBLE else binding.undoButton.visibility = View.INVISIBLE
+            if(isRedoVisible) binding.redoButton.visibility = View.VISIBLE else binding.redoButton.visibility = View.INVISIBLE
+        }
+
     }
 
     private var tempToolProperties: ToolProperties? = null
@@ -262,13 +279,17 @@ class DrawFragment : Fragment() {
         binding.fileName.text = mainActivityViewModel.openedProject.projectName
         binding.favCheckBox.isChecked = mainActivityViewModel.openedProject.isFavourite
 
+        updateDrawingCanvas()
+
+    }
+
+    private fun updateDrawingCanvas(){
         lifecycleScope.launch(Dispatchers.Default) {
-            binding.drawingView.updateBitmapDrawing()
+            binding.drawingView.reDraw()
             withContext(Dispatchers.Main){
                 binding.drawingView.invalidate()
             }
         }
-
     }
 
 }
