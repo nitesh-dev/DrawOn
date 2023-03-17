@@ -10,6 +10,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.ObjectKey
 import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.utils.Project
 
@@ -52,6 +55,7 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
             holder.favButton.visibility = View.INVISIBLE
             Glide.with(context)
                 .load(R.drawable.icon_create_project)
+                .skipMemoryCache(true)
                 .into(holder.imageView)
             return
         }
@@ -60,9 +64,10 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
         holder.nameView.text = project.projectName
         holder.favButton.isChecked = project.isFavourite
 
-        val path = "${context.filesDir}/${project.projectId}.png"
-        Glide.with(context)
+        val path = "${context.filesDir}/${project.projectId}thumb.png"
+       Glide.with(context)
             .load(path)
+            .signature(ObjectKey(String("${System.currentTimeMillis()}".toByteArray())))
             .error(R.drawable.not_found_image)
             .into(holder.imageView)
     }

@@ -396,13 +396,25 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     private fun bitmapToThumbnail(originalBitmap: Bitmap, maxSize: Int): Bitmap {
 
-        val ratio = min(width.toFloat() / maxSize, height.toFloat() / maxSize)
+        // update needed for creating thumbnail in small resolution
 
-        val thumbnailWidth = (width / ratio).toInt()
-        val thumbnailHeight = (height / ratio).toInt()
+//        val thumbnailWidth = 0f
+//        val thumbnailHeight = 0f
+
+//        if(width < height){
+//            val ratio = height.toFloat() / width
+//            thumbnailWidth = maxSize.toFloat()
+//            thumbnailHeight = ratio * maxSize
+//        }else{
+//            val ratio = width.toFloat() / height
+//            thumbnailHeight = maxSize.toFloat()
+//            thumbnailWidth = ratio * maxSize
+//        }
 
         // returning thumbnail
-        return Bitmap.createScaledBitmap(originalBitmap, thumbnailWidth, thumbnailHeight, false)
+        //return Bitmap.createScaledBitmap(originalBitmap, thumbnailHeight.toInt(), thumbnailWidth.toInt(), false)
+        return  originalBitmap
+
     }
 
     private fun isColorTransparent(color: Int): Boolean {
