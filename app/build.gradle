@@ -38,7 +38,7 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':ColorPicker')
+    implementation 'com.github.ab44gl:ColorPicker-Android:2.0'
 
     // room
     def room_version = "2.5.0"

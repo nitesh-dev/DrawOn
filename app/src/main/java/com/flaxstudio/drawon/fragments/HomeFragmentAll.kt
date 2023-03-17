@@ -1,6 +1,8 @@
 package com.flaxstudio.drawon.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,26 +44,26 @@ class HomeFragmentAll : Fragment(R.layout.fragment_home_all){
         super.onViewCreated(view, savedInstanceState)
 
         settingUp()
-        uiObservers()
+        settingData()
     }
 
 
-    private fun uiObservers(){
+    @SuppressLint("NotifyDataSetChanged")
+    private fun settingData(){
 
-        mainActivityViewModel.allProjects.observe(viewLifecycleOwner){ data ->
-            // use this for recycler view
+        adapter.clearProjects()
+        mainActivityViewModel.getAllProjects {
+            for(project in it){
+                adapter.addProject(project)
 
-//            adapter.clearProjects()
-            for(project in data as ArrayList<Project>){
+            }
+            adapter.notifyDataSetChanged()
+        }
+
 
 //                if(cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.All){
 //
 //                }
-                adapter.addProject(project)
-                adapter.notifyItemInserted(adapter.itemCount - 1)
-            }
-
-        }
     }
 
     private fun settingUp(){
@@ -110,7 +112,7 @@ class HomeFragmentAll : Fragment(R.layout.fragment_home_all){
         mainActivityViewModel.createProject(newProject){
 
             mainActivityViewModel.openedProject = newProject
-            mainActivityViewModel.saveProject(requireContext(), emptyShapeData, mainActivityViewModel.defaultToolbarProperties)
+            mainActivityViewModel.saveProject(requireContext(), null, mainActivityViewModel.defaultToolbarProperties)
 
             findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
         }

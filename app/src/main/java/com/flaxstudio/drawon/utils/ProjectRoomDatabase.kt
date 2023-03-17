@@ -22,7 +22,7 @@ data class Project(
 @Dao
 interface ProjectDao {
     @Query("SELECT * FROM projects")
-    fun getAllProjects(): Flow<List<Project>>
+    fun getAllProjects(): List<Project>
 
     @Query("SELECT * FROM projects WHERE project_id = :id LIMIT 1")
     fun getProjectById(id: String): Project
@@ -38,17 +38,16 @@ interface ProjectDao {
 }
 class ProjectRepository(private val projectDao: ProjectDao) {
 
-    // Room executes all queries on a separate thread.
-    // Observed Flow will notify the observer when the data has changed.
-    val allProjects: Flow<List<Project>> = projectDao.getAllProjects()
 
-    // By default Room runs suspend queries off the main thread, therefore, we don't need to
-    // implement anything else to ensure we're not doing long running database work
-    // off the main thread.
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(project: Project) {
         projectDao.addProject(project)
+    }
+
+    @WorkerThread
+    suspend fun getAllProjects(): List<Project>{
+        return projectDao.getAllProjects()
     }
 
     @WorkerThread

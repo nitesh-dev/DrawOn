@@ -8,12 +8,18 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import com.flaxstudio.drawon.utils.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.Float.min
 
+typealias  funUndoRedo = (isUndoVisible:Boolean, isRedoVisible: Boolean)->Unit
 class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
-    private val allShape: ArrayList<Shape> = ArrayList()
+    private val allShapeRedo: ArrayList<Shape> = ArrayList()                // redo
+    private val allShape: ArrayList<Shape> = ArrayList()                    // undo
     private val toolsData: ArrayList<ToolProperties> = ArrayList()
     private val tempPath = Path()                   // this path is used by triangle
 
@@ -26,6 +32,8 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private val whiteBoardRect = Rect(0, 0, 1080, 720)
 
     private var previousTouch = Vector2()
+
+   var projectSavedBitmap: Bitmap? = null
 
 
     private var whiteBoardPaint = Paint().apply {
@@ -47,17 +55,29 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private val catchBitmap = Bitmap.createBitmap(1280, 720, Bitmap.Config.ARGB_8888)
     private val canvasBitmap = Canvas(catchBitmap)
     private var totalShapeDrawn = 0
+    private var undoRedoFun: funUndoRedo? = null
+    fun setUndoRedoListener(callback:funUndoRedo){
+        undoRedoFun = callback
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.translate(canvasPosition.x, canvasPosition.y)
         canvas.clipRect(whiteBoardRect)
-        canvas.drawRect(whiteBoardRect, whiteBoardPaint)
+
+        // this will draw white screen if the project is new.
+        // Otherwise it will draw saved project bitmap.
+        if(projectSavedBitmap == null) canvas.drawRect(whiteBoardRect, whiteBoardPaint) else canvas.drawBitmap(projectSavedBitmap!!, 0F, 0F, null)
 
         if(isRedrawAllowed){
-//            onDrawBitmap(canvasBitmap, true)
+
+            undoRedoFun?.invoke(allShape.isNotEmpty(), allShapeRedo.isNotEmpty())
             isRedrawAllowed = false
-        }else if(totalShapeDrawn < allShape.size) onDrawBitmap(canvasBitmap)
+        }else if(totalShapeDrawn < allShape.size){
+
+            undoRedoFun?.invoke(allShape.isNotEmpty(), allShapeRedo.isNotEmpty())
+            onDrawBitmap(canvasBitmap)
+        }
 
         canvas.drawBitmap(catchBitmap, 0F, 0F, null)
 
@@ -70,13 +90,12 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private fun onDrawBitmap(canvas: Canvas, isDrawAll: Boolean = false){
 
         if(isDrawAll){
+            canvas.drawRect(whiteBoardRect, whiteBoardPaint)
             for (shape in allShape){
                 drawShape(canvas, shape)
             }
         }else drawShape(canvas, allShape.last())
-
         totalShapeDrawn = allShape.size
-
     }
 
     private fun drawShape(canvas: Canvas, shape: Shape){
@@ -346,7 +365,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 if(isCurrentShapeDrawing){
 
                     allShape.add(currentDrawingShape)
-
+                    if(allShapeRedo.isNotEmpty()) allShapeRedo.clear()
                     isCurrentShapeDrawing = false
                     invalidate()
                 }
@@ -358,12 +377,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
         return true
     }
-
-
-    suspend fun updateBitmapDrawing(){
-        onDrawBitmap(canvasBitmap, true)
-    }
-
 
 
     fun getSelectedToolProp(selectedTool: ShapeType): ToolProperties?{
@@ -397,27 +410,22 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         return alpha == 0
     }
 
+    fun getCanvasBitmap(): Bitmap {
+        val bitmap = Bitmap.createBitmap(whiteBoardRect.width(), whiteBoardRect.height(), Bitmap.Config.ARGB_8888)
+        val bitmapCanvas = Canvas(bitmap)
+
+        //bitmapCanvas.clipRect(whiteBoardRect)
+
+        if(projectSavedBitmap == null) bitmapCanvas.drawRect(whiteBoardRect, whiteBoardPaint) else {
+            bitmapCanvas.drawBitmap(projectSavedBitmap!!, 0f, 0f, null)
+        }
+        for (shape in allShape) drawShape(bitmapCanvas, shape)
+        return bitmap
+    }
+
 
 
     // the below functions will be called from fragment or activity
-
-    fun setDrawnShapes(shapeData: Shape){
-        allShape.add(shapeData)
-    }
-
-    fun getDrawnShapes(): ArrayList<Shape>{
-        val tempShapes = ArrayList<Shape>()
-
-        for (shape in allShape){
-            if(shape.shapeType == ShapeType.Brush){
-                shape as Brush
-                tempShapes.add(shape.toBrushRaw())
-            }else{
-                tempShapes.add(shape)
-            }
-        }
-        return allShape
-    }
 
     fun getToolData(): ArrayList<ToolProperties>{
         return toolsData
@@ -439,7 +447,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 return
             }
         }
-
     }
 
     fun setSelectedTool(toolType: ShapeType){
@@ -447,16 +454,28 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     fun getThumbnail(): Bitmap {
-        val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
-        val bitmapCanvas = Canvas(bitmap)
-
-        bitmapCanvas.clipRect(whiteBoardRect)
-        bitmapCanvas.drawRect(whiteBoardRect, whiteBoardPaint)
-        for (shape in allShape) drawShape(bitmapCanvas, shape)
-
-        return bitmapToThumbnail(bitmap, 512)
+        return bitmapToThumbnail(getCanvasBitmap(), 512)
     }
 
+
+    private val maxUndoRedoRange = 10
+    fun undo(){
+        if(allShape.size == 0) return
+        allShapeRedo.add(allShape.removeLast())
+    }
+
+    fun redo(){
+        if(allShapeRedo.size == 0) return
+        allShape.add(allShapeRedo.removeLast())
+    }
+
+    suspend fun reDraw(){
+
+        // creating bitmap
+        onDrawBitmap(canvasBitmap, true)
+        isRedrawAllowed = true
+        postInvalidate()
+    }
 }
 
 
