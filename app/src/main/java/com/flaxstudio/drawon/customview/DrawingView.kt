@@ -90,7 +90,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private fun onDrawBitmap(canvas: Canvas, isDrawAll: Boolean = false){
 
         if(isDrawAll){
-            canvas.drawRect(whiteBoardRect, whiteBoardPaint)
+            catchBitmap.eraseColor(Color.TRANSPARENT)
             for (shape in allShape){
                 drawShape(canvas, shape)
             }
@@ -482,11 +482,9 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     suspend fun reDraw(){
-
         // creating bitmap
         onDrawBitmap(canvasBitmap, true)
         isRedrawAllowed = true
-        postInvalidate()
     }
 }
 

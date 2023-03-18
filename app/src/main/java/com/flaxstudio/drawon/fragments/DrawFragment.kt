@@ -13,9 +13,11 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.abhishek.colorpicker.ColorPickerDialog
 import com.flaxstudio.drawon.ProjectApplication
 import com.flaxstudio.drawon.R
@@ -37,6 +39,17 @@ class DrawFragment : Fragment() {
     private lateinit var binding: FragmentDrawBinding
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels {
         MainActivityViewModelFactory((requireActivity().application as ProjectApplication).repository)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // adding back features in fragment
+//        val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
+//
+//
+//        }
+
     }
 
     override fun onCreateView(
@@ -90,6 +103,12 @@ class DrawFragment : Fragment() {
             // saving canvas thumbnail
             mainActivityViewModel.saveBitmap(requireContext(), bitmap, true)
             Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
+
+            // back to home
+           //findNavController().navigate(R.id.action_drawFragment_to_homeFragment2)
+            findNavController().popBackStack(R.id.homeFragment,false)
+            //requireActivity().onBackPressedDispatcher.onBackPressed()
+
         }
 
         // toggle selected tools
