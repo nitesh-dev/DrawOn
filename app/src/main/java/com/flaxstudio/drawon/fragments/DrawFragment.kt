@@ -3,6 +3,7 @@ package com.flaxstudio.drawon.fragments
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.abhishek.colorpicker.ColorPickerDialog
 import com.flaxstudio.drawon.ProjectApplication
+import com.flaxstudio.drawon.ProjectExportActivity
 import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.databinding.FragmentDrawBinding
 import com.flaxstudio.drawon.utils.BrushRaw
@@ -219,6 +221,13 @@ class DrawFragment : Fragment() {
                 View.VISIBLE else binding.redoButton.visibility = View.INVISIBLE
         }
 
+        // project export
+        binding.exportButton.setOnClickListener {
+
+            val intent = Intent(activity, ProjectExportActivity::class.java)
+            mainActivityViewModel.saveBitmap(requireContext(), binding.drawingView.getCanvasBitmap(), false, "export-bitmap")
+            startActivity(intent)
+        }
     }
 
     private var tempToolProperties: ToolProperties? = null
@@ -292,7 +301,7 @@ class DrawFragment : Fragment() {
             binding.drawingView.setToolData(toolsData)
         }
 
-        binding.fileName.text = mainActivityViewModel.openedProject.projectName
+        binding.fileName.setText(mainActivityViewModel.openedProject.projectName)
         binding.favCheckBox.isChecked = mainActivityViewModel.openedProject.isFavourite
 
         // loading saved bitmap
