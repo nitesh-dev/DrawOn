@@ -37,7 +37,15 @@ class ProjectExportActivity : AppCompatActivity() {
 
         // saving file
         binding.saveButton.setOnClickListener {
+            val bitmap = binding.cropView.getCroppedBitmap()
+            if(bitmap == null){
+                Toast.makeText(applicationContext, "Unable to crop!", Toast.LENGTH_SHORT).show()
+            }else{
 
+                // handle here... to save bitmap to png, jpg etc
+
+                Toast.makeText(applicationContext, "Saved", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.resetButton.setOnClickListener {

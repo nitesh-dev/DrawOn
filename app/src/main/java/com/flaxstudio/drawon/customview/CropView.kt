@@ -45,7 +45,8 @@ class CropView (context: Context, attrs: AttributeSet) : View(context, attrs) {
     private var transparentBitmap: Bitmap? = null           // transparent check background
     private val cropBitmapOffset = 8.toPx                   // offset for drawing bitmap
     private var scaledBitmap: Bitmap? = null                // actual bitmap to draw on canvas
-    private val bitmapRect = RectF()                        // bitmap rect
+    private var rawBitmap: Bitmap? = null                   // raw bitmap which is set by calling loadBitmap()
+    private val bitmapRect = RectF()                        // bitmap drawing rect
     private val cropperRect = RectF()                       // rect of cropper
 
     override fun onDraw(canvas: Canvas) {
@@ -110,16 +111,6 @@ class CropView (context: Context, attrs: AttributeSet) : View(context, attrs) {
         bitmapRect.bottom = bitmapRect.top + bitmapHeight
         cropperRect.set(bitmapRect.left, bitmapRect.top, bitmapRect.right, bitmapRect.bottom)
     }
-    fun loadBitmap(bitmap: Bitmap){
-        createScaledBitmap(bitmap)
-        postInvalidate()
-    }
-
-    fun resetPointerToDefault(){
-        cropperRect.set(bitmapRect.left, bitmapRect.top, bitmapRect.right, bitmapRect.bottom)
-        invalidate()
-    }
-
 
     private fun drawCropper(canvas: Canvas){
         // drawing main lines
@@ -241,6 +232,46 @@ class CropView (context: Context, attrs: AttributeSet) : View(context, attrs) {
         if(distance < cropperTouchRadius){
             selectedPointer = Pointer.BOTTOM_LEFT
             return
+        }
+    }
+
+
+
+
+    // public functions
+    fun loadBitmap(bitmap: Bitmap){
+        rawBitmap = bitmap
+        createScaledBitmap(bitmap)
+        postInvalidate()
+    }
+
+    fun resetPointerToDefault(){
+        cropperRect.set(bitmapRect.left, bitmapRect.top, bitmapRect.right, bitmapRect.bottom)
+        invalidate()
+    }
+
+    fun getCroppedBitmap(): Bitmap?{
+
+        if(rawBitmap == null) return null
+
+        // getting new rect relative to canvas bitmap
+        val relativeRect = RectF()
+        relativeRect.left = cropperRect.left - bitmapRect.left
+        relativeRect.top = cropperRect.top - bitmapRect.top
+        relativeRect.right = cropperRect.right - bitmapRect.left
+        relativeRect.bottom = cropperRect.bottom - bitmapRect.top
+
+        // now calculating relative to raw bitmap
+        relativeRect.left = relativeRect.left / bitmapRect.width() * rawBitmap!!.width
+        relativeRect.right = relativeRect.right / bitmapRect.width() * rawBitmap!!.width
+        relativeRect.top = relativeRect.top / bitmapRect.height() * rawBitmap!!.height
+        relativeRect.bottom = relativeRect.bottom / bitmapRect.height() * rawBitmap!!.height
+
+        return try {
+            Bitmap.createBitmap(rawBitmap!!, relativeRect.left.toInt(), relativeRect.top.toInt(), relativeRect.width().toInt(), relativeRect.height().toInt())
+        }catch (ex: java.lang.IllegalArgumentException){
+            ex.printStackTrace()
+            null
         }
     }
 }
