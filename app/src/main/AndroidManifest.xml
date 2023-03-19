@@ -13,12 +13,9 @@
         android:theme="@style/Theme.DrawOn"
         tools:targetApi="31">
         <activity
-            android:name=".ProjectExportActivity"
-            android:exported="false" />
-        <activity
+            android:hardwareAccelerated="true"
             android:name=".MainActivity"
-            android:exported="true"
-            android:hardwareAccelerated="true">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

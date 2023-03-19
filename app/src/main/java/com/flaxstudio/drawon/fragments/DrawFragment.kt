@@ -3,7 +3,6 @@ package com.flaxstudio.drawon.fragments
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -14,14 +13,11 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.Toast
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.abhishek.colorpicker.ColorPickerDialog
 import com.flaxstudio.drawon.ProjectApplication
-import com.flaxstudio.drawon.ProjectExportActivity
 import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.databinding.FragmentDrawBinding
 import com.flaxstudio.drawon.utils.BrushRaw
@@ -39,19 +35,9 @@ import java.io.IOException
 class DrawFragment : Fragment() {
 
     private lateinit var binding: FragmentDrawBinding
+    private lateinit var colorPickerDialog: ColorPickerDialog
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels {
         MainActivityViewModelFactory((requireActivity().application as ProjectApplication).repository)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // adding back features in fragment
-//        val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
-//
-//
-//        }
-
     }
 
     override fun onCreateView(
@@ -63,7 +49,7 @@ class DrawFragment : Fragment() {
     }
 
 
-    private lateinit var colorPickerDialog: ColorPickerDialog
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -105,12 +91,6 @@ class DrawFragment : Fragment() {
             // saving canvas thumbnail
             mainActivityViewModel.saveBitmap(requireContext(), bitmap, true)
             Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
-
-            // back to home
-           //findNavController().navigate(R.id.action_drawFragment_to_homeFragment2)
-            findNavController().popBackStack(R.id.homeFragment,false)
-            //requireActivity().onBackPressedDispatcher.onBackPressed()
-
         }
 
         // toggle selected tools
@@ -221,13 +201,6 @@ class DrawFragment : Fragment() {
                 View.VISIBLE else binding.redoButton.visibility = View.INVISIBLE
         }
 
-        // project export
-        binding.exportButton.setOnClickListener {
-
-            val intent = Intent(activity, ProjectExportActivity::class.java)
-            mainActivityViewModel.saveBitmap(requireContext(), binding.drawingView.getCanvasBitmap(), false, "export-bitmap")
-            startActivity(intent)
-        }
     }
 
     private var tempToolProperties: ToolProperties? = null
@@ -301,7 +274,7 @@ class DrawFragment : Fragment() {
             binding.drawingView.setToolData(toolsData)
         }
 
-        binding.fileName.setText(mainActivityViewModel.openedProject.projectName)
+        binding.fileName.text = mainActivityViewModel.openedProject.projectName
         binding.favCheckBox.isChecked = mainActivityViewModel.openedProject.isFavourite
 
         // loading saved bitmap
