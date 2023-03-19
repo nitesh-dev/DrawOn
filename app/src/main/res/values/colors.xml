@@ -14,4 +14,6 @@
     <color name="very_light_blue">#F5F7FF</color>
     <color name="light_gray">#F1EDED</color>
 
+    <color name="pointer_color">#E91E63</color>
+
 </resources>

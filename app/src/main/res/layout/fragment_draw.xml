@@ -33,7 +33,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
-                android:id="@+id/saveButton"
+                android:id="@+id/exportButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -41,18 +41,33 @@
                 android:contentDescription="@string/app_name"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
-                android:src="@drawable/icon_save"
+                android:src="@drawable/icon_export"
                 app:layout_constraintBottom_toBottomOf="@+id/toolbar"
                 app:layout_constraintEnd_toEndOf="@+id/toolbar"
                 app:layout_constraintTop_toTopOf="@+id/toolbar" />
 
-            <TextView
+            <ImageButton
+                android:id="@+id/saveButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:contentDescription="@string/app_name"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:src="@drawable/icon_save"
+                app:layout_constraintBottom_toBottomOf="@+id/toolbar"
+                app:layout_constraintEnd_toStartOf="@+id/exportButton"
+                app:layout_constraintTop_toTopOf="@+id/toolbar" />
+
+            <EditText
                 android:id="@+id/fileName"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginStart="24dp"
+                android:background="@drawable/corner_rounded_background"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:paddingTop="4dp"
                 android:text="@string/empty_file_name"
                 android:textColor="@color/dark_blue"
                 android:textSize="16sp"
