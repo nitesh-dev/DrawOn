@@ -90,7 +90,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private fun onDrawBitmap(canvas: Canvas, isDrawAll: Boolean = false){
 
         if(isDrawAll){
-            catchBitmap.eraseColor(Color.TRANSPARENT)
+            canvas.drawRect(whiteBoardRect, whiteBoardPaint)
             for (shape in allShape){
                 drawShape(canvas, shape)
             }
@@ -396,25 +396,13 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     private fun bitmapToThumbnail(originalBitmap: Bitmap, maxSize: Int): Bitmap {
 
-        // update needed for creating thumbnail in small resolution
+        val ratio = min(width.toFloat() / maxSize, height.toFloat() / maxSize)
 
-//        val thumbnailWidth = 0f
-//        val thumbnailHeight = 0f
-
-//        if(width < height){
-//            val ratio = height.toFloat() / width
-//            thumbnailWidth = maxSize.toFloat()
-//            thumbnailHeight = ratio * maxSize
-//        }else{
-//            val ratio = width.toFloat() / height
-//            thumbnailHeight = maxSize.toFloat()
-//            thumbnailWidth = ratio * maxSize
-//        }
+        val thumbnailWidth = (width / ratio).toInt()
+        val thumbnailHeight = (height / ratio).toInt()
 
         // returning thumbnail
-        //return Bitmap.createScaledBitmap(originalBitmap, thumbnailHeight.toInt(), thumbnailWidth.toInt(), false)
-        return  originalBitmap
-
+        return Bitmap.createScaledBitmap(originalBitmap, thumbnailWidth, thumbnailHeight, false)
     }
 
     private fun isColorTransparent(color: Int): Boolean {
@@ -482,9 +470,11 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     suspend fun reDraw(){
+
         // creating bitmap
         onDrawBitmap(canvasBitmap, true)
         isRedrawAllowed = true
+        postInvalidate()
     }
 }
 

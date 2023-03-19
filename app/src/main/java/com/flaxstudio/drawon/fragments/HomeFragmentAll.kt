@@ -60,6 +60,7 @@ class HomeFragmentAll : Fragment(R.layout.fragment_home_all){
             adapter.notifyDataSetChanged()
         }
 
+
 //                if(cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.All){
 //
 //                }
@@ -103,7 +104,7 @@ class HomeFragmentAll : Fragment(R.layout.fragment_home_all){
     private val cDateTime = CustomDateTime()
 
     private fun createNewProject(projectName: String, whiteBoardSize: Size){
-
+        val emptyShapeData = ArrayList<Shape>()
         val projectId = mainActivityViewModel.generateUniqueId()
         val dateTime = "cDateTime.getDateTimeString()"
         val newProject = Project(0, projectId, projectName, false, dateTime, whiteBoardSize.width, whiteBoardSize.height)
