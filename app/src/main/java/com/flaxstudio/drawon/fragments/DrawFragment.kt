@@ -3,6 +3,7 @@ package com.flaxstudio.drawon.fragments
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -42,6 +43,7 @@ class DrawFragment : Fragment() {
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels {
         MainActivityViewModelFactory((requireActivity().application as ProjectApplication).repository)
     }
+    private lateinit var context: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +69,7 @@ class DrawFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        context = requireContext()
         colorPickerDialog = ColorPickerDialog()
         initialiseAnimation()
         addListeners()
@@ -80,8 +83,8 @@ class DrawFragment : Fragment() {
     private lateinit var panelOpenAnim: Animation
 
     private fun initialiseAnimation() {
-        panelCloseAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.prop_panel_close)
-        panelOpenAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.prop_panel_open)
+        panelCloseAnim = AnimationUtils.loadAnimation(context, R.anim.prop_panel_close)
+        panelOpenAnim = AnimationUtils.loadAnimation(context, R.anim.prop_panel_open)
     }
 
 
@@ -94,7 +97,7 @@ class DrawFragment : Fragment() {
         binding.saveButton.setOnClickListener {
 
             mainActivityViewModel.saveProject(
-                requireContext(),
+                context,
                 binding.drawingView.getCanvasBitmap(),
                 binding.drawingView.getToolData()
             )
@@ -103,7 +106,7 @@ class DrawFragment : Fragment() {
             val bitmap = binding.drawingView.getThumbnail()
 
             // saving canvas thumbnail
-            mainActivityViewModel.saveBitmap(requireContext(), bitmap, true)
+            mainActivityViewModel.saveBitmap(context, bitmap, true)
             Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
 
             // back to home
@@ -111,6 +114,12 @@ class DrawFragment : Fragment() {
             findNavController().popBackStack(R.id.homeFragment,false)
             //requireActivity().onBackPressedDispatcher.onBackPressed()
 
+        }
+
+        // favourite
+        binding.favCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            mainActivityViewModel.openedProject.isFavourite = isChecked
+            mainActivityViewModel.updateProject(mainActivityViewModel.openedProject)
         }
 
         // toggle selected tools
@@ -225,7 +234,7 @@ class DrawFragment : Fragment() {
         binding.exportButton.setOnClickListener {
 
             val intent = Intent(activity, ProjectExportActivity::class.java)
-            mainActivityViewModel.saveBitmap(requireContext(), binding.drawingView.getCanvasBitmap(), false, "export-bitmap")
+            mainActivityViewModel.saveBitmap(context, binding.drawingView.getCanvasBitmap(), false, "export-bitmap")
             startActivity(intent)
         }
     }
@@ -295,7 +304,7 @@ class DrawFragment : Fragment() {
     // ui update work here
     private fun loadUiData() {
 
-        val toolsData = mainActivityViewModel.loadProject(requireContext())
+        val toolsData = mainActivityViewModel.loadProject(context)
 
         if (toolsData != null) {
             binding.drawingView.setToolData(toolsData)
@@ -308,7 +317,7 @@ class DrawFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Default) {
 
             val bitmap: Bitmap? = try {
-                    mainActivityViewModel.getBitmap(requireContext(), false, mainActivityViewModel.openedProject.projectId)
+                    mainActivityViewModel.getBitmap(context, false, mainActivityViewModel.openedProject.projectId)
                 }catch (ex: IOException) {
                     null
                 }
