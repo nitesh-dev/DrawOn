@@ -1,13 +1,10 @@
 package com.flaxstudio.drawon.fragments
 
-import android.animation.AnimatorInflater
-import android.animation.AnimatorSet
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,14 +16,11 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.abhishek.colorpicker.ColorPickerDialog
 import com.flaxstudio.drawon.ProjectApplication
 import com.flaxstudio.drawon.ProjectExportActivity
 import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.databinding.FragmentDrawBinding
-import com.flaxstudio.drawon.utils.BrushRaw
-import com.flaxstudio.drawon.utils.EraserRaw
 import com.flaxstudio.drawon.utils.ShapeType
 import com.flaxstudio.drawon.utils.ToolProperties
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModel
@@ -43,17 +37,23 @@ class DrawFragment : Fragment() {
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels {
         MainActivityViewModelFactory((requireActivity().application as ProjectApplication).repository)
     }
-    private lateinit var context: Context
+    private lateinit var contextApp: Context
+    private var isProjectModified = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // adding back features in fragment
-//        val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
-//
-//
-//        }
+        // used to handle back press
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
 
+            if(isProjectModified){
+
+                // ask user to save project by show dialog
+            }else{
+                isEnabled = false
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+        }
     }
 
     override fun onCreateView(
@@ -69,7 +69,7 @@ class DrawFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        context = requireContext()
+        contextApp = requireContext()
         colorPickerDialog = ColorPickerDialog()
         initialiseAnimation()
         addListeners()
@@ -83,8 +83,8 @@ class DrawFragment : Fragment() {
     private lateinit var panelOpenAnim: Animation
 
     private fun initialiseAnimation() {
-        panelCloseAnim = AnimationUtils.loadAnimation(context, R.anim.prop_panel_close)
-        panelOpenAnim = AnimationUtils.loadAnimation(context, R.anim.prop_panel_open)
+        panelCloseAnim = AnimationUtils.loadAnimation(contextApp, R.anim.prop_panel_close)
+        panelOpenAnim = AnimationUtils.loadAnimation(contextApp, R.anim.prop_panel_open)
     }
 
 
@@ -97,7 +97,7 @@ class DrawFragment : Fragment() {
         binding.saveButton.setOnClickListener {
 
             mainActivityViewModel.saveProject(
-                context,
+                contextApp,
                 binding.drawingView.getCanvasBitmap(),
                 binding.drawingView.getToolData()
             )
@@ -106,14 +106,11 @@ class DrawFragment : Fragment() {
             val bitmap = binding.drawingView.getThumbnail()
 
             // saving canvas thumbnail
-            mainActivityViewModel.saveBitmap(context, bitmap, true)
-            Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
+            mainActivityViewModel.saveBitmap(contextApp, bitmap, true)
+            Toast.makeText(contextApp, "Saved", Toast.LENGTH_SHORT).show()
 
             // back to home
-           //findNavController().navigate(R.id.action_drawFragment_to_homeFragment2)
-            findNavController().popBackStack(R.id.homeFragment,false)
-            //requireActivity().onBackPressedDispatcher.onBackPressed()
-
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
         // favourite
@@ -234,7 +231,7 @@ class DrawFragment : Fragment() {
         binding.exportButton.setOnClickListener {
 
             val intent = Intent(activity, ProjectExportActivity::class.java)
-            mainActivityViewModel.saveBitmap(context, binding.drawingView.getCanvasBitmap(), false, "export-bitmap")
+            mainActivityViewModel.saveBitmap(contextApp, binding.drawingView.getCanvasBitmap(), false, "export-bitmap")
             startActivity(intent)
         }
     }
@@ -304,7 +301,7 @@ class DrawFragment : Fragment() {
     // ui update work here
     private fun loadUiData() {
 
-        val toolsData = mainActivityViewModel.loadProject(context)
+        val toolsData = mainActivityViewModel.loadProject(contextApp)
 
         if (toolsData != null) {
             binding.drawingView.setToolData(toolsData)
@@ -317,7 +314,7 @@ class DrawFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Default) {
 
             val bitmap: Bitmap? = try {
-                    mainActivityViewModel.getBitmap(context, false, mainActivityViewModel.openedProject.projectId)
+                    mainActivityViewModel.getBitmap(contextApp, false, mainActivityViewModel.openedProject.projectId)
                 }catch (ex: IOException) {
                     null
                 }

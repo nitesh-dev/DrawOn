@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -27,7 +26,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     private lateinit var binding: FragmentHomeAllBinding
     private lateinit var adapter: HomeRecyclerViewAdapter
     private val fragmentType: FragmentType
-    private lateinit var context: Context
+    private lateinit var contextApp: Context
 
     init {
         this.fragmentType = fragmentType
@@ -68,7 +67,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        context = requireContext()
+        contextApp = requireContext()
         settingUp()
         settingData()
     }
@@ -116,8 +115,8 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     }
 
     private fun settingUp() {
-        adapter = HomeRecyclerViewAdapter(context)
-        val gridLayoutManager = GridLayoutManager(context, 2)
+        adapter = HomeRecyclerViewAdapter(contextApp)
+        val gridLayoutManager = GridLayoutManager(contextApp, 2)
 
         // set adapter to recyclerview
         binding.recyclerview.layoutManager = gridLayoutManager
@@ -139,7 +138,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
         }
 
         adapter.setOnProjectDeleteListener { position, project ->
-            mainActivityViewModel.deleteProject(context, project) {
+            mainActivityViewModel.deleteProject(contextApp, project) {
                 adapter.removeProject(project)
                 adapter.notifyItemRemoved(position)
             }
@@ -183,7 +182,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
 
             mainActivityViewModel.openedProject = newProject
             mainActivityViewModel.saveProject(
-                context,
+                contextApp,
                 null,
                 mainActivityViewModel.defaultToolbarProperties
             )
