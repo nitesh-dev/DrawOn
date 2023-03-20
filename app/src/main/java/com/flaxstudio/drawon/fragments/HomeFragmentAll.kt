@@ -15,17 +15,19 @@ import com.flaxstudio.drawon.adapters.SpaceItemDecoration
 import com.flaxstudio.drawon.ProjectApplication
 import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.databinding.FragmentHomeAllBinding
-import com.flaxstudio.drawon.utils.CustomDateTime
-import com.flaxstudio.drawon.utils.Project
-import com.flaxstudio.drawon.utils.Shape
-import com.flaxstudio.drawon.utils.Size
+import com.flaxstudio.drawon.utils.*
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModel
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModelFactory
 
-class HomeFragmentAll : Fragment(R.layout.fragment_home_all){
+class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_home_all) {
 
     private lateinit var binding: FragmentHomeAllBinding
     private lateinit var adapter: HomeRecyclerViewAdapter
+    private val fragmentType: FragmentType
+
+    init {
+        this.fragmentType = fragmentType
+    }
 
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels {
         MainActivityViewModelFactory((requireActivity().application as ProjectApplication).repository)
@@ -49,23 +51,45 @@ class HomeFragmentAll : Fragment(R.layout.fragment_home_all){
 
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun settingData(){
+    private fun settingData() {
 
         adapter.clearProjects()
+
         mainActivityViewModel.getAllProjects {
-            for(project in it){
-                adapter.addProject(project)
+            for (project in it) {
+
+                when (fragmentType) {
+                    FragmentType.Today -> {
+
+                        if (cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.Today) {
+                            adapter.addProject(project)
+                        }
+                    }
+
+                    FragmentType.Week -> {
+                        if (cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.Week) {
+                            adapter.addProject(project)
+                        }
+                    }
+
+                    FragmentType.Month -> {
+                        if (cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.Month) {
+                            adapter.addProject(project)
+                        }
+                    }
+
+                    FragmentType.All -> {
+                        adapter.addProject(project)
+                    }
+                }
 
             }
             adapter.notifyDataSetChanged()
         }
 
-//                if(cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.All){
-//
-//                }
     }
 
-    private fun settingUp(){
+    private fun settingUp() {
         adapter = HomeRecyclerViewAdapter(requireContext())
         val gridLayoutManager = GridLayoutManager(requireContext(), 2)
 
@@ -78,22 +102,22 @@ class HomeFragmentAll : Fragment(R.layout.fragment_home_all){
 
         adapter.setOnClickListener { position, project ->
 
-            if(position == 0){
+            if (position == 0) {
                 // create new project
                 openCreateProjectDialog()
 
-            }else{
+            } else {
                 // open selected project
                 openProject(project)
             }
         }
     }
 
-    private fun openCreateProjectDialog(){
+    private fun openCreateProjectDialog() {
         createNewProject("Draw 1", Size(720, 1280))
     }
 
-    private fun openProject(project: Project){
+    private fun openProject(project: Project) {
 
         mainActivityViewModel.openedProject = project
         findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
@@ -102,16 +126,29 @@ class HomeFragmentAll : Fragment(R.layout.fragment_home_all){
 
     private val cDateTime = CustomDateTime()
 
-    private fun createNewProject(projectName: String, whiteBoardSize: Size){
+    private fun createNewProject(projectName: String, whiteBoardSize: Size) {
 
         val projectId = mainActivityViewModel.generateUniqueId()
-        val dateTime = "cDateTime.getDateTimeString()"
-        val newProject = Project(0, projectId, projectName, false, dateTime, whiteBoardSize.width, whiteBoardSize.height)
+        val dateTime = cDateTime.getDateTimeString()
+        Log.e("============", dateTime)
+        val newProject = Project(
+            0,
+            projectId,
+            projectName,
+            false,
+            dateTime,
+            whiteBoardSize.width,
+            whiteBoardSize.height
+        )
 
-        mainActivityViewModel.createProject(newProject){
+        mainActivityViewModel.createProject(newProject) {
 
             mainActivityViewModel.openedProject = newProject
-            mainActivityViewModel.saveProject(requireContext(), null, mainActivityViewModel.defaultToolbarProperties)
+            mainActivityViewModel.saveProject(
+                requireContext(),
+                null,
+                mainActivityViewModel.defaultToolbarProperties
+            )
 
             findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
         }

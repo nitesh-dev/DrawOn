@@ -185,3 +185,10 @@ enum class ShapeType{
     Eraser,
     Triangle
 }
+
+enum class FragmentType{
+    All,
+    Today,
+    Week,
+    Month
+}

@@ -22,7 +22,7 @@ class HomeFragment : Fragment() {
     }
 
 
-    private val tabTitles = arrayListOf("All" , "Today" , "Week" , "Month")
+    private val tabTitles = arrayListOf("Today" , "Week" , "Month", "All")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,7 +51,8 @@ class HomeFragment : Fragment() {
 
     private fun setupLayoutWithViewPager() {
         binding.viewPager.adapter = HomePagerAdapter(this)
-        TabLayoutMediator(binding.tabBarLayout , binding.viewPager){ tab , position ->
+
+       TabLayoutMediator(binding.tabBarLayout , binding.viewPager){ tab , position ->
             tab.text = tabTitles[position]
 
 

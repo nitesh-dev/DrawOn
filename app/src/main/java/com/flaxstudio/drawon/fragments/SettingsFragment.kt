@@ -30,7 +30,7 @@ class SettingsFragment : Fragment() {
         }
         // Bck Clicked
         binding.btnBack.setOnClickListener{
-            findNavController().navigate(R.id.action_settingsFragment_to_homeFragment)
+
         }
     }
 

@@ -60,7 +60,7 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
             return
         }
 
-        holder.dateTimeView.text
+        holder.dateTimeView.text = project.lastModified
         holder.nameView.text = project.projectName
         holder.favButton.isChecked = project.isFavourite
 

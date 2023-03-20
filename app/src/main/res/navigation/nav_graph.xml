@@ -11,9 +11,6 @@
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
         <action
-            android:id="@+id/action_settingsFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
-        <action
             android:id="@+id/action_settingsFragment_to_privacyFragment"
             app:destination="@id/privacyFragment" />
     </fragment>
@@ -41,18 +38,10 @@
         android:id="@+id/drawFragment"
         android:name="com.flaxstudio.drawon.fragments.DrawFragment"
         android:label="fragment_draw"
-        tools:layout="@layout/fragment_draw" >
-        <action
-            android:id="@+id/action_drawFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_draw" />
     <fragment
         android:id="@+id/privacyFragment"
         android:name="com.flaxstudio.drawon.fragments.PrivacyFragment"
         android:label="fragment_privacy"
-        tools:layout="@layout/fragment_privacy" >
-        <action
-            android:id="@+id/action_privacyFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_privacy" />
 </navigation>
