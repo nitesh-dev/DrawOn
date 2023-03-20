@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -35,6 +37,25 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
         MainActivityViewModelFactory((requireActivity().application as ProjectApplication).repository)
     }
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // used to handle back press
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+
+            // Handle the back button event
+            if(adapter.longPressSelectedView == null){
+                isEnabled = false
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }else{
+
+                adapter.longPressSelectedView!!.visibility = View.INVISIBLE
+                adapter.longPressSelectedView = null
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,6 +72,8 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
         settingUp()
         settingData()
     }
+
+
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -112,6 +135,13 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
             } else {
                 // open selected project
                 openProject(project)
+            }
+        }
+
+        adapter.setOnProjectDeleteListener { position, project ->
+            mainActivityViewModel.deleteProject(context, project) {
+                adapter.removeProject(project)
+                adapter.notifyItemRemoved(position)
             }
         }
 

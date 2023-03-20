@@ -1,12 +1,15 @@
 package com.flaxstudio.drawon.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,6 +24,10 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
     private val projectsData = ArrayList<Project>()
     private var itemClickListener:((position:Int, project: Project)->Unit)? = null
     private var itemFavClickListener:((position:Int, project: Project)->Unit)? = null
+    private var projectDeleteListener:((position:Int, project: Project)->Unit)? = null
+
+    var longPressSelectedView: RelativeLayout? = null                   // null means no selection
+
 
     fun setOnClickListener(callback:(position:Int, project: Project)->Unit){
         itemClickListener = callback
@@ -29,8 +36,17 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
     fun setOnFavClickListener(callback:(position:Int, project: Project)->Unit){
         itemFavClickListener = callback
     }
+
+    fun setOnProjectDeleteListener(callback:(position:Int, project: Project)->Unit){
+        projectDeleteListener = callback
+    }
+
     fun addProject(project: Project){
         projectsData.add(project)
+    }
+
+    fun removeProject(project: Project){
+        projectsData.remove(project)
     }
 
     fun clearProjects(){
@@ -93,9 +109,33 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
         init {
             itemView.setOnClickListener {
                 val position = adapterPosition
-                if(position!=RecyclerView.NO_POSITION){
+                if(position != RecyclerView.NO_POSITION){
                     itemClickListener?.invoke(position, projectsData[position])
                 }
+            }
+
+            // delete
+            itemView.findViewById<ImageButton>(R.id.buttonDelete).setOnClickListener {
+                val position = adapterPosition
+                if(position!=RecyclerView.NO_POSITION){
+                    projectDeleteListener?.invoke(position, projectsData[position])
+                }
+            }
+
+            // long click
+            itemView.setOnLongClickListener {
+
+                if(adapterPosition == 0) return@setOnLongClickListener false
+
+                // clear previous selected project
+                if(longPressSelectedView != null){
+                    longPressSelectedView!!.visibility = View.INVISIBLE
+                }
+
+                // set new project to long press
+                longPressSelectedView = itemView.findViewById(R.id.buttonDeleteParent)
+                longPressSelectedView!!.visibility = View.VISIBLE
+                return@setOnLongClickListener true
             }
 
             itemView.findViewById<CheckBox>(R.id.cardFav).setOnCheckedChangeListener { _, isChecked ->

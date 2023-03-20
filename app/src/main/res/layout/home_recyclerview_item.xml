@@ -66,5 +66,24 @@
                 tools:ignore="SmallSp" />
         </LinearLayout>
 
+        <RelativeLayout
+            android:id="@+id/buttonDeleteParent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/dark_blue"
+            android:visibility="invisible"
+            tools:visibility="invisible">
+
+            <ImageButton
+                android:id="@+id/buttonDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="#00FFFFFF"
+                android:padding="16dp"
+                app:srcCompat="@drawable/icon_delete"
+                app:tint="#FFFFFF" />
+        </RelativeLayout>
+
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

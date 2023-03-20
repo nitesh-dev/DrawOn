@@ -71,6 +71,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         repository.delete(project)
         deleteLocalFile(context, project.projectId + ".json")
         deleteLocalFile(context, project.projectId + ".png")
+        deleteLocalFile(context, project.projectId + "thumb.png")
 
         withContext(Dispatchers.Main){
             callback()
