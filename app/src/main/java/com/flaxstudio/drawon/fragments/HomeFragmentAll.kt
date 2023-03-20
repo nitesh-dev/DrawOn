@@ -1,6 +1,7 @@
 package com.flaxstudio.drawon.fragments
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,6 +25,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     private lateinit var binding: FragmentHomeAllBinding
     private lateinit var adapter: HomeRecyclerViewAdapter
     private val fragmentType: FragmentType
+    private lateinit var context: Context
 
     init {
         this.fragmentType = fragmentType
@@ -45,6 +47,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        context = requireContext()
         settingUp()
         settingData()
     }
@@ -90,8 +93,8 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     }
 
     private fun settingUp() {
-        adapter = HomeRecyclerViewAdapter(requireContext())
-        val gridLayoutManager = GridLayoutManager(requireContext(), 2)
+        adapter = HomeRecyclerViewAdapter(context)
+        val gridLayoutManager = GridLayoutManager(context, 2)
 
         // set adapter to recyclerview
         binding.recyclerview.layoutManager = gridLayoutManager
@@ -110,6 +113,11 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
                 // open selected project
                 openProject(project)
             }
+        }
+
+        adapter.setOnFavClickListener { _, project ->
+
+            mainActivityViewModel.updateProject(project)
         }
     }
 
@@ -145,7 +153,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
 
             mainActivityViewModel.openedProject = newProject
             mainActivityViewModel.saveProject(
-                requireContext(),
+                context,
                 null,
                 mainActivityViewModel.defaultToolbarProperties
             )

@@ -20,9 +20,14 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
 
     private val projectsData = ArrayList<Project>()
     private var itemClickListener:((position:Int, project: Project)->Unit)? = null
+    private var itemFavClickListener:((position:Int, project: Project)->Unit)? = null
 
     fun setOnClickListener(callback:(position:Int, project: Project)->Unit){
         itemClickListener = callback
+    }
+
+    fun setOnFavClickListener(callback:(position:Int, project: Project)->Unit){
+        itemFavClickListener = callback
     }
     fun addProject(project: Project){
         projectsData.add(project)
@@ -90,6 +95,14 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
                 val position = adapterPosition
                 if(position!=RecyclerView.NO_POSITION){
                     itemClickListener?.invoke(position, projectsData[position])
+                }
+            }
+
+            itemView.findViewById<CheckBox>(R.id.cardFav).setOnCheckedChangeListener { _, isChecked ->
+                val position = adapterPosition
+                if(position!=RecyclerView.NO_POSITION){
+                    projectsData[position].isFavourite = isChecked
+                    itemFavClickListener?.invoke(position, projectsData[position])
                 }
             }
         }
