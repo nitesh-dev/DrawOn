@@ -49,10 +49,8 @@ class DrawFragment : Fragment() {
 
         // used to handle back press
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-
             if(isProjectModified){
-
-                // ask user to save project by show dialog
+            // ask user to save project by show dialog
             }else{
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
