@@ -146,7 +146,5 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
                 }
             }
         }
-
-
     }
 }

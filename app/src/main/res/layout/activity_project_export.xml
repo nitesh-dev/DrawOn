@@ -41,6 +41,8 @@
                 android:src="@drawable/icon_reset"
                 app:layout_constraintBottom_toBottomOf="@+id/toolbar"
                 app:layout_constraintEnd_toStartOf="@+id/saveButton"
+                app:layout_constraintHorizontal_bias="0.891"
+                app:layout_constraintStart_toEndOf="@+id/textView2"
                 app:layout_constraintTop_toTopOf="@+id/toolbar" />
 
             <ImageButton
