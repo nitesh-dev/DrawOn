@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="25dp"
+    android:paddingVertical="35dp"
+    android:background="@drawable/rect_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/dark_blue"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:text="@string/create" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/dark_blue"
+        android:textSize="22sp"
+        android:text="@string/create_alert_message" />
+
+
+    <EditText
+        android:id="@+id/et_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/btn_bg_dialogue_box"
+        android:hint="@string/hint_title"
+        android:inputType="text"
+        android:autofillHints="Title"
+        android:minHeight="48dp"
+        android:paddingVertical="8dp"
+        android:textAlignment="center"
+        android:textSize="26sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_length"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_dialogue_box"
+            android:hint="@string/hint_width"
+            android:textSize="26sp"
+            android:paddingVertical="8dp"
+            android:textAlignment="center"
+            android:autofillHints="width"
+            android:inputType="number"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <EditText
+            android:id="@+id/et_width"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_dialogue_box"
+            android:hint="@string/hint_height"
+            android:textSize="26sp"
+            android:paddingVertical="8dp"
+            android:textAlignment="center"
+            android:autofillHints="height"
+            android:inputType="number"
+            tools:ignore="TouchTargetSizeCheck" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_dialogue_box"
+            android:text="@string/bnt_cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/dark_blue"
+            android:textSize="22sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_dialogue_box"
+            android:text="@string/btn_create"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/dark_blue"
+            android:textSize="22sp"/>
+    </LinearLayout>
+</LinearLayout>

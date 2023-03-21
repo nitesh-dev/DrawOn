@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@drawable/rect_bg_save"
+    android:padding="16dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Save"
+        android:text="@string/save_text"
+        android:textSize="28dp"
+        android:textColor="@color/dark_blue"
+        android:layout_gravity="center"/>
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_alert_message"
+        android:layout_gravity="center"
+        android:textColor="@color/dark_blue"
+        android:textSize="26sp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/cancel_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_dialogue_box"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/dark_blue"
+            android:textSize="22sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_dialogue_box"
+            android:text="Save"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/dark_blue"
+            android:textSize="22sp"/>
+    </LinearLayout>
+
+
+</LinearLayout>

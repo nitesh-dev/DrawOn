@@ -1,15 +1,19 @@
 package com.flaxstudio.drawon.fragments
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -333,6 +337,29 @@ class DrawFragment : Fragment() {
             withContext(Dispatchers.Main) {
                 binding.drawingView.invalidate()
             }
+        }
+    }
+
+
+    // save alert dialog box
+    private fun saveAlert(){
+        val alertBuilder = AlertDialog.Builder(requireContext())
+        val customAlertBox : View = layoutInflater.inflate(R.layout.save_alert_box , null)
+        alertBuilder.setView(customAlertBox)
+        val dialog = alertBuilder.create()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+
+        customAlertBox.findViewById<Button>(R.id.cancel_btn).setOnClickListener {
+            dialog.dismiss()
+            // TODO handle the negative button click here
+        }
+        customAlertBox.findViewById<Button>(R.id.btn_save).setOnClickListener {
+
+            // TODO  handle the positive button click here
+            dialog.dismiss()
+            Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
+
         }
     }
 
