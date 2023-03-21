@@ -24,4 +24,6 @@
     <string name="hint_width">Width</string>
     <string name="bnt_cancel">Cancel</string>
     <string name="btn_create">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
 </resources>

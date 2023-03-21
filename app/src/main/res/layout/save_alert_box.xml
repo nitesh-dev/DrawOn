@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:background="@drawable/rect_bg_save"
+    android:layout_gravity="center"
     android:padding="16dp">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="Save"
         android:text="@string/save_text"
-        android:textSize="28dp"
+        android:textSize="28sp"
         android:textColor="@color/dark_blue"
         android:layout_gravity="center"/>
     <TextView
@@ -34,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/btn_bg_dialogue_box"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:textAllCaps="false"
             android:textColor="@color/dark_blue"
             android:textSize="22sp" />
@@ -46,7 +47,7 @@
             android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:background="@drawable/btn_bg_dialogue_box"
-            android:text="Save"
+            android:text="@string/save"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:backgroundTint="@color/dark_blue"
