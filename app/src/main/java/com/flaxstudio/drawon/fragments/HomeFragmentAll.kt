@@ -1,12 +1,18 @@
 package com.flaxstudio.drawon.fragments
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -188,6 +194,44 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
             )
 
             findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
+            //createProjectAlertDialog()
+        }
+    }
+
+    // the below function is to create a alert dialog box for new project
+    private fun createProjectAlertDialog(){
+        val alertBuilder = AlertDialog.Builder(requireContext())
+        val customLayout : View = layoutInflater.inflate(R.layout.create_project_alert_box ,null)
+        alertBuilder.setView(customLayout)
+        val dialog = alertBuilder.create()
+        val etLength = customLayout.findViewById<EditText>(R.id.et_length)
+        val etWidth = customLayout.findViewById<EditText>(R.id.et_width)
+        val etTitle = customLayout.findViewById<EditText>(R.id.et_title)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+        customLayout.findViewById<Button>(R.id.btn_cancel).setOnClickListener {
+            // TODO handle the negative button click here
+            dialog.dismiss()
+        }
+        customLayout.findViewById<Button>(R.id.btn_create).setOnClickListener {
+
+            if (etTitle.text.isNullOrEmpty()){
+                Toast.makeText(requireContext() , "Please Enter a valid Title." , Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }else{
+                val title = etTitle.text.toString()
+                if (etLength.text.isNullOrEmpty() || etWidth.text.isNullOrEmpty()){
+                    Toast.makeText(requireContext() , "Please Enter a valid Height and Width." , Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }else{
+                    val length : Int  = etLength.text.toString().toInt()
+                    val width  : Int  = etWidth.text.toString().toInt()
+                    //createNewProject(title, Size(width , length))
+                    // TODO handle the positive button click here
+                    dialog.dismiss()
+                }
+            }
+
         }
     }
 }
