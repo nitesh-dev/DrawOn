@@ -235,6 +235,7 @@ class DrawFragment : Fragment() {
         binding.exportButton.setOnClickListener {
 
             val intent = Intent(activity, ProjectExportActivity::class.java)
+            intent.putExtra("project-name", mainActivityViewModel.openedProject.projectName)
             mainActivityViewModel.saveBitmap(contextApp, binding.drawingView.getCanvasBitmap(), false, "export-bitmap")
             startActivity(intent)
         }
