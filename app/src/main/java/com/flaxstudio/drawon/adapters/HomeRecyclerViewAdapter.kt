@@ -53,7 +53,7 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
         projectsData.clear()
 
         // Note: the below project is just to add 1 more element for creating new project only
-        val tempPro = Project(0,"","",false,"",0,0)
+        val tempPro = Project(0,"","","",false,"","",0,0)
         projectsData.add(tempPro)
     }
 
@@ -76,7 +76,6 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
             holder.favButton.visibility = View.INVISIBLE
             Glide.with(context)
                 .load(R.drawable.icon_create_project)
-                .skipMemoryCache(true)
                 .into(holder.imageView)
             return
         }
@@ -85,10 +84,10 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
         holder.nameView.text = project.projectName
         holder.favButton.isChecked = project.isFavourite
 
-        val path = "${context.filesDir}/${project.projectId}thumb.png"
-       Glide.with(context)
+        val path = "${context.filesDir}/${project.projectBitmapId}.png"
+        Log.e("=============", path)
+        Glide.with(context)
             .load(path)
-            .signature(ObjectKey(String("${System.currentTimeMillis()}".toByteArray())))
             .error(R.drawable.not_found_image)
             .into(holder.imageView)
     }
