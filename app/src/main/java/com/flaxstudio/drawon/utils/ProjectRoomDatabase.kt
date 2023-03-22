@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.Flow
 data class Project(
     @PrimaryKey(autoGenerate = true) var id: Int,
     @ColumnInfo(name = "project_id") var projectId: String,
+    @ColumnInfo(name = "project_bitmap_id") var projectBitmapId: String,
     @ColumnInfo(name = "project_name") var projectName: String,
     @ColumnInfo(name = "is_fav") var isFavourite: Boolean,
+    @ColumnInfo(name = "project_created") var projectCreated: String,
     @ColumnInfo(name = "last_modified") var lastModified: String,
     @ColumnInfo(name = "whiteboard_width") var whiteboardWidth: Int,
     @ColumnInfo(name = "whiteboard_height") var whiteboardHeight: Int,

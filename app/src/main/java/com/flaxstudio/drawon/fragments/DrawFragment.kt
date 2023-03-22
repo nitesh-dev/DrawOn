@@ -98,27 +98,26 @@ class DrawFragment : Fragment() {
         // save project
         binding.saveButton.setOnClickListener {
 
-            mainActivityViewModel.saveProject(
+            // saving project
+            mainActivityViewModel.saveProjectTask(
                 contextApp,
                 binding.drawingView.getCanvasBitmap(),
                 binding.drawingView.getToolData()
-            )
+            ){
+                Toast.makeText(contextApp, "Saved", Toast.LENGTH_SHORT).show()
 
-            // creating & saving thumbnail
-            val bitmap = binding.drawingView.getThumbnail()
+                // back to home
+                //requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
 
-            // saving canvas thumbnail
-            mainActivityViewModel.saveBitmap(contextApp, bitmap, true)
-            Toast.makeText(contextApp, "Saved", Toast.LENGTH_SHORT).show()
-
-            // back to home
-            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
         // favourite
         binding.favCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            mainActivityViewModel.openedProject.isFavourite = isChecked
-            mainActivityViewModel.updateProject(mainActivityViewModel.openedProject)
+            mainActivityViewModel.updateProjectTask(mainActivityViewModel.openedProject){
+                // callback of update
+                mainActivityViewModel.openedProject.isFavourite = isChecked
+            }
         }
 
         // toggle selected tools
@@ -232,10 +231,12 @@ class DrawFragment : Fragment() {
         // project export
         binding.exportButton.setOnClickListener {
 
-            val intent = Intent(activity, ProjectExportActivity::class.java)
-            intent.putExtra("project-name", mainActivityViewModel.openedProject.projectName)
-            mainActivityViewModel.saveBitmap(contextApp, binding.drawingView.getCanvasBitmap(), false, "export-bitmap")
-            startActivity(intent)
+
+            mainActivityViewModel.saveBitmapTask(contextApp, binding.drawingView.getCanvasBitmap(),  "export-bitmap"){
+                val intent = Intent(activity, ProjectExportActivity::class.java)
+                intent.putExtra("project-name", mainActivityViewModel.openedProject.projectName)
+                startActivity(intent)
+            }
         }
     }
 
@@ -268,7 +269,6 @@ class DrawFragment : Fragment() {
             ShapeType.Triangle -> {
                 binding.fillColorParent.visibility = View.VISIBLE
             }
-            else -> {}
         }
 
         // stroke
@@ -304,30 +304,20 @@ class DrawFragment : Fragment() {
     // ui update work here
     private fun loadUiData() {
 
-        val toolsData = mainActivityViewModel.loadProject(contextApp)
+        mainActivityViewModel.loadProjectDataTask(contextApp){ toolsData ->
+            if (toolsData != null) {
+                binding.drawingView.setToolData(toolsData)
+            }
 
-        if (toolsData != null) {
-            binding.drawingView.setToolData(toolsData)
-        }
+            binding.fileName.setText(mainActivityViewModel.openedProject.projectName)
+            binding.favCheckBox.isChecked = mainActivityViewModel.openedProject.isFavourite
 
-        binding.fileName.setText(mainActivityViewModel.openedProject.projectName)
-        binding.favCheckBox.isChecked = mainActivityViewModel.openedProject.isFavourite
-
-        // loading saved bitmap
-        lifecycleScope.launch(Dispatchers.Default) {
-
-            val bitmap: Bitmap? = try {
-                    mainActivityViewModel.getBitmap(contextApp, false, mainActivityViewModel.openedProject.projectId)
-                }catch (ex: IOException) {
-                    null
-                }
-            binding.drawingView.projectSavedBitmap = bitmap
-
-            withContext(Dispatchers.Main) {
+            // loading saved bitmap
+            mainActivityViewModel.getBitmapTask(contextApp,  mainActivityViewModel.openedProject.projectBitmapId){ bitmap ->
+                binding.drawingView.projectSavedBitmap = bitmap
                 binding.drawingView.invalidate()
             }
         }
-
     }
 
     private fun updateDrawingCanvas() {

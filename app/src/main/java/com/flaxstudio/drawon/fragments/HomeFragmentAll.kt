@@ -80,7 +80,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
 
         adapter.clearProjects()
 
-        mainActivityViewModel.getAllProjects {
+        mainActivityViewModel.getAllProjectsTask {
             for (project in it) {
 
                 when (fragmentType) {
@@ -138,7 +138,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
         }
 
         adapter.setOnProjectDeleteListener { position, project ->
-            mainActivityViewModel.deleteProject(contextApp, project) {
+            mainActivityViewModel.deleteProjectTask(contextApp, project) {
                 adapter.removeProject(project)
                 adapter.notifyItemRemoved(position)
             }
@@ -146,7 +146,9 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
 
         adapter.setOnFavClickListener { _, project ->
 
-            mainActivityViewModel.updateProject(project)
+            mainActivityViewModel.updateProjectTask(project){
+                // callback
+            }
         }
     }
 
@@ -167,27 +169,23 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
 
         val projectId = mainActivityViewModel.generateUniqueId()
         val dateTime = cDateTime.getDateTimeString()
-        Log.e("============", dateTime)
+
         val newProject = Project(
             0,
             projectId,
+            "",
             projectName,
             false,
+            dateTime,
             dateTime,
             whiteBoardSize.width,
             whiteBoardSize.height
         )
 
-        mainActivityViewModel.createProject(newProject) {
-
-            mainActivityViewModel.openedProject = newProject
-            mainActivityViewModel.saveProject(
-                contextApp,
-                null,
-                mainActivityViewModel.defaultToolbarProperties
-            )
-
+        mainActivityViewModel.openedProject = newProject
+        mainActivityViewModel.createProjectTask(contextApp, newProject) {
             findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
         }
+
     }
 }

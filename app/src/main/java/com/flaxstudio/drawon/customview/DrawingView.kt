@@ -394,28 +394,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     }
 
-    private fun bitmapToThumbnail(originalBitmap: Bitmap, maxSize: Int): Bitmap {
-
-        // update needed for creating thumbnail in small resolution
-
-//        val thumbnailWidth = 0f
-//        val thumbnailHeight = 0f
-
-//        if(width < height){
-//            val ratio = height.toFloat() / width
-//            thumbnailWidth = maxSize.toFloat()
-//            thumbnailHeight = ratio * maxSize
-//        }else{
-//            val ratio = width.toFloat() / height
-//            thumbnailHeight = maxSize.toFloat()
-//            thumbnailWidth = ratio * maxSize
-//        }
-
-        // returning thumbnail
-        //return Bitmap.createScaledBitmap(originalBitmap, thumbnailHeight.toInt(), thumbnailWidth.toInt(), false)
-        return  originalBitmap
-
-    }
 
     private fun isColorTransparent(color: Int): Boolean {
         val alpha = color shr 24 and 0xff
@@ -463,10 +441,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     fun setSelectedTool(toolType: ShapeType){
         currentSelectedTool = toolType
-    }
-
-    fun getThumbnail(): Bitmap {
-        return bitmapToThumbnail(getCanvasBitmap(), 512)
     }
 
 

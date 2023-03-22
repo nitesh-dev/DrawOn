@@ -3,6 +3,7 @@ package com.flaxstudio.drawon.viewmodels
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
@@ -16,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -25,8 +27,8 @@ import kotlin.collections.ArrayList
 class MainActivityViewModel(private val repository: ProjectRepository): ViewModel() {
 
     lateinit var openedProject: Project
-
-    val defaultToolbarProperties = ArrayList<ToolProperties>().apply {
+    private val cDateTime = CustomDateTime()
+    private val defaultToolbarProperties = ArrayList<ToolProperties>().apply {
         // add brush
         add(ToolProperties(ShapeType.Brush, Color.TRANSPARENT, Color.BLACK, 4f))
 
@@ -50,78 +52,116 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
 
     //room
 
-    fun getAllProjects(callback: (List<Project>) -> Unit) = viewModelScope.launch(Dispatchers.Default){
+    fun getAllProjectsTask(callback: (List<Project>) -> Unit) = viewModelScope.launch(Dispatchers.Default){
         val projects = repository.getAllProjects()
         withContext(Dispatchers.Main){
             callback(projects)
         }
     }
-    fun createProject(project: Project, callback: () -> Unit) = viewModelScope.launch(Dispatchers.Default) {
+    fun createProjectTask(context: Context, project: Project, callback: () -> Unit) = viewModelScope.launch(Dispatchers.Default) {
+        saveProject(context, null, null)
         repository.insert(project)
         withContext(Dispatchers.Main){
             callback()
         }
     }
 
-    fun updateProject(project: Project) = viewModelScope.launch ( Dispatchers.Default){
+    fun updateProjectTask(project: Project, callback: () -> Unit) = viewModelScope.launch ( Dispatchers.Default){
         repository.update(project)
+        withContext(Dispatchers.Main){
+            callback()
+        }
     }
 
-    fun deleteProject(context: Context , project: Project, callback: () -> Unit) = viewModelScope.launch  (Dispatchers.Default){
+    fun deleteProjectTask(context: Context , project: Project, callback: () -> Unit) = viewModelScope.launch  (Dispatchers.Default){
         repository.delete(project)
         deleteLocalFile(context, project.projectId + ".json")
-        deleteLocalFile(context, project.projectId + ".png")
-        deleteLocalFile(context, project.projectId + "thumb.png")
+        deleteLocalFile(context, project.projectBitmapId + ".png")
 
         withContext(Dispatchers.Main){
             callback()
         }
     }
 
+    fun saveProjectTask(context: Context, bitmap: Bitmap?, toolData: ArrayList<ToolProperties>?, callback: () -> Unit) = viewModelScope.launch (Dispatchers.Default) {
 
+        saveProject(context, bitmap, toolData)
+        repository.update(openedProject)                    // updating database
+        withContext(Dispatchers.Main){
+            callback()
+        }
+    }
+
+    fun saveBitmapTask(context: Context, bitmap: Bitmap, bitmapId: String, callback: () -> Unit) = viewModelScope.launch(Dispatchers.Default){
+
+        saveBitmap(context, bitmap, bitmapId)
+        withContext(Dispatchers.Main){
+            callback()
+        }
+    }
+
+    fun loadProjectDataTask(context: Context, callback: (ArrayList<ToolProperties>?) -> Unit) = viewModelScope.launch(Dispatchers.Default){
+
+        val json = loadProjectFromLocal(context, openedProject.projectId)
+        withContext(Dispatchers.Main){
+            callback(Gson().fromJson(json, object : TypeToken<ArrayList<ToolProperties>>() {}.type))
+        }
+    }
+
+     fun getBitmapTask(context: Context, bitmapId: String, callback: (Bitmap?) -> Unit) = viewModelScope.launch(Dispatchers.Default){
+
+         val fileName = "${bitmapId}.png"
+         val bitmap: Bitmap? = try {
+             context.openFileInput(fileName).use {
+                 BitmapFactory.decodeStream(it)
+             }
+         }catch (ex: IOException){
+             ex.printStackTrace()
+             null
+         }
+
+         withContext(Dispatchers.Main){
+             callback(bitmap)
+         }
+    }
 
 
     // save and load functions
-    fun saveProject(context: Context, bitmap: Bitmap?, toolData: ArrayList<ToolProperties>){
+    private fun saveProject(context: Context, bitmap: Bitmap?, toolData: ArrayList<ToolProperties>?){
+        Log.e("============", "ksdjfkjsdklfjsdfsdfsdf")
+        // TODO "project not saving bug" on saving project after creating initial project.
 
-        // saving
-        val json = Gson().toJson(toolData)
-        Log.e("==========", json)
+        // deleting previous saved image
+        deleteLocalFile(context, "${openedProject.projectBitmapId}.png")
 
-        if(bitmap != null) saveBitmap(context, bitmap, false, openedProject.projectId)
+        val json = if(toolData == null){                                    // creating json file for saving
+                Gson().toJson(defaultToolbarProperties)
+            }else Gson().toJson(toolData)
 
-        saveProjectLocally(context, openedProject.projectId, json)
+        openedProject.lastModified = cDateTime.getDateTimeString()          // setting current date time
+        openedProject.projectBitmapId = generateUniqueId()                  // generating id for bitmap
+
+        // if bitmap is null then create a empty bitmap else save the bitmap
+        if(bitmap == null){
+
+            val emptyBitmap = Bitmap.createBitmap(openedProject.whiteboardWidth, openedProject.whiteboardHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(emptyBitmap)
+            canvas.drawRGB(255,255,255)
+
+            saveBitmap(context, emptyBitmap, openedProject.projectBitmapId)
+        }else saveBitmap(context, bitmap, openedProject.projectBitmapId)
+
+        saveProjectLocally(context, openedProject.projectId, json)          // saving json file
     }
 
-    fun loadProject(context: Context): ArrayList<ToolProperties>? {
 
-        val json = loadProjectFromLocal(context, openedProject.projectId)
-        return Gson().fromJson(json, object : TypeToken<ArrayList<ToolProperties>>() {}.type)
-    }
 
-    fun saveBitmap(context: Context, bitmap: Bitmap, isThumbnail: Boolean = false, bitmapId: String = "0"){
 
-        val fileName = if(isThumbnail){
-            "${openedProject.projectId}thumb.png"
-        } else {
-            "${bitmapId}.png"
-        }
+    private fun saveBitmap(context: Context, bitmap: Bitmap, bitmapId: String = "0"){
 
+        val fileName = "$bitmapId.png"
         context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
-        }
-    }
-
-
-    fun getBitmap(context: Context, isThumbnail: Boolean = false, bitmapId: String = "0"): Bitmap? {
-
-        val fileName = if(isThumbnail){
-            "${openedProject.projectId}thumb.png"
-        } else {
-            "${bitmapId}.png"
-        }
-        context.openFileInput(fileName).use {
-            return BitmapFactory.decodeStream(it)
         }
     }
 
