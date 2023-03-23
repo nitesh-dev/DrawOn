@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.flaxstudio.drawon.adapters.HomeRecyclerViewAdapter
@@ -20,6 +21,10 @@ import com.flaxstudio.drawon.databinding.FragmentHomeAllBinding
 import com.flaxstudio.drawon.utils.*
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModel
 import com.flaxstudio.drawon.viewmodels.MainActivityViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_home_all) {
 
@@ -68,14 +73,25 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
         super.onViewCreated(view, savedInstanceState)
 
         contextApp = requireContext()
+        loadRecyclerViewDataInBackground()
+    }
+
+    private fun loadRecyclerViewDataInBackground() = lifecycleScope.launch{
+        delay(800)              // wait for animation to done
         settingUp()
         settingData()
+
+        withContext(Dispatchers.Main){
+            binding.shimmerLayout.visibility = View.GONE
+            binding.recyclerview.visibility = View.VISIBLE
+
+        }
     }
 
 
 
 
-    @SuppressLint("NotifyDataSetChanged")
+
     private fun settingData() {
 
         adapter.clearProjects()

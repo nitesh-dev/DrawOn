@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="150dp"
+    android:layout_height="210dp"
+    android:background="@drawable/corner_rounded_background">
+
+    <ImageView
+        android:id="@+id/cardImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/shimmer_color_300" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+        android:background="@color/shimmer_color_400"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/shimmer_bacground"
+            android:backgroundTint="@color/shimmer_color_100"
+            android:maxWidth="100dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/shimmer_bacground"
+            android:backgroundTint="@color/shimmer_color_100" />
+    </LinearLayout>
+
+</RelativeLayout>

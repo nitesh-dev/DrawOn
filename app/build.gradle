@@ -49,6 +49,11 @@ android {
 }
 
 dependencies {
+
+    // shimmer
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+    // color picker library
     implementation 'com.github.ab44gl:ColorPicker-Android:+'
 
     // room

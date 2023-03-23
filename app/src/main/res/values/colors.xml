@@ -7,7 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
 
+
 <!--    Custom colors used in app -->
+    <color name="shimmer_color_100">#F6F6F6</color>
+    <color name="shimmer_color_300">#EEEEEE</color>
+    <color name="shimmer_color_400">#dddddd</color>
+
+<!--    Theme pick only -->
     <color name="white">#FFFFFFFF</color>
     <color name="dark_blue">#001662</color>
     <color name="light_blue">#CDD8FF</color>
