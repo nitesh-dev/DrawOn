@@ -107,16 +107,15 @@ class DrawFragment : Fragment() {
                 Toast.makeText(contextApp, "Saved", Toast.LENGTH_SHORT).show()
 
                 // back to home
-                //requireActivity().onBackPressedDispatcher.onBackPressed()
+                requireActivity().onBackPressedDispatcher.onBackPressed()
             }
-
         }
 
         // favourite
         binding.favCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            mainActivityViewModel.openedProject.isFavourite = isChecked
             mainActivityViewModel.updateProjectTask(mainActivityViewModel.openedProject){
                 // callback of update
-                mainActivityViewModel.openedProject.isFavourite = isChecked
             }
         }
 
@@ -314,6 +313,9 @@ class DrawFragment : Fragment() {
 
             // loading saved bitmap
             mainActivityViewModel.getBitmapTask(contextApp,  mainActivityViewModel.openedProject.projectBitmapId){ bitmap ->
+                val width = mainActivityViewModel.openedProject.whiteboardWidth
+                val height = mainActivityViewModel.openedProject.whiteboardHeight
+                binding.drawingView.setWhiteBoardSize(width, height)
                 binding.drawingView.projectSavedBitmap = bitmap
                 binding.drawingView.invalidate()
             }

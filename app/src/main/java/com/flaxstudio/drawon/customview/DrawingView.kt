@@ -33,7 +33,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     private var previousTouch = Vector2()
 
-   var projectSavedBitmap: Bitmap? = null
+    var projectSavedBitmap: Bitmap? = null
 
 
     private var whiteBoardPaint = Paint().apply {
@@ -442,7 +442,10 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     fun setSelectedTool(toolType: ShapeType){
         currentSelectedTool = toolType
     }
-
+    fun setWhiteBoardSize(width: Int, height: Int){
+        whiteBoardRect.right = width
+        whiteBoardRect.bottom = height
+    }
 
     private val maxUndoRedoRange = 10
     fun undo(){

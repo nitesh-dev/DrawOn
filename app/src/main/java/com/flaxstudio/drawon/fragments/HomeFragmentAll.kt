@@ -88,30 +88,32 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
 
                         if (cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.Today) {
                             adapter.addProject(project)
+                            adapter.notifyItemInserted(adapter.itemCount - 1)
                         }
                     }
 
                     FragmentType.Week -> {
                         if (cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.Week) {
                             adapter.addProject(project)
+                            adapter.notifyItemInserted(adapter.itemCount - 1)
                         }
                     }
 
                     FragmentType.Month -> {
                         if (cDateTime.getDateWithin(project.lastModified) == CustomDateTime.DateWithin.Month) {
                             adapter.addProject(project)
+                            adapter.notifyItemInserted(adapter.itemCount - 1)
                         }
                     }
 
                     FragmentType.All -> {
                         adapter.addProject(project)
+                        adapter.notifyItemInserted(adapter.itemCount - 1)
                     }
                 }
 
             }
-            adapter.notifyDataSetChanged()
         }
-
     }
 
     private fun settingUp() {
@@ -153,7 +155,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     }
 
     private fun openCreateProjectDialog() {
-        createNewProject("Draw 1", Size(720, 1280))
+        createNewProject("Draw 1", Size(1280, 720))
     }
 
     private fun openProject(project: Project) {

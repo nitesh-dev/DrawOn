@@ -4,6 +4,17 @@ plugins {
 }
 apply plugin: 'kotlin-kapt'
 android {
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\nites\\.android\\debug.keystore')
+        }
+        release {
+            storeFile file('C:\\Users\\nites\\Documents\\android-keystore-release.jks')
+            storePassword '123456'
+            keyAlias 'nitesh'
+            keyPassword '123456'
+        }
+    }
     namespace 'com.flaxstudio.drawon'
     compileSdk 33
 
