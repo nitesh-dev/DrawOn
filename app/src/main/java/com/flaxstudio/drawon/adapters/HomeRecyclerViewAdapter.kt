@@ -17,9 +17,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
 import com.flaxstudio.drawon.R
+import com.flaxstudio.drawon.utils.FragmentType
 import com.flaxstudio.drawon.utils.Project
 
-class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapter<HomeRecyclerViewAdapter.RecyclerViewHolder>() {
+class HomeRecyclerViewAdapter(private val context: Context,private val adapterType:FragmentType) : RecyclerView.Adapter<HomeRecyclerViewAdapter.RecyclerViewHolder>() {
 
     private val projectsData = ArrayList<Project>()
     private var itemClickListener:((position:Int, project: Project)->Unit)? = null
@@ -53,8 +54,11 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
         projectsData.clear()
 
         // Note: the below project is just to add 1 more element for creating new project only
-        val tempPro = Project(0,"","","",false,"","",0,0)
-        projectsData.add(tempPro)
+        if (adapterType == FragmentType.All|| adapterType == FragmentType.Today) {
+            val tempPro = Project(0, "", "", "", false, "", "", 0, 0)
+            projectsData.add(tempPro)
+            // Alert Box
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
@@ -71,13 +75,15 @@ class HomeRecyclerViewAdapter(private val context: Context) : RecyclerView.Adapt
         val project = projectsData[position]
 
         // 0 index of array is reserved for creating new project only
-        if(position == 0){
-            holder.linearLayout.visibility = View.INVISIBLE
-            holder.favButton.visibility = View.INVISIBLE
-            Glide.with(context)
-                .load(R.drawable.icon_create_project)
-                .into(holder.imageView)
-            return
+        if (adapterType == FragmentType.All|| adapterType == FragmentType.Today) {
+            if (position == 0) {
+                holder.linearLayout.visibility = View.INVISIBLE
+                holder.favButton.visibility = View.INVISIBLE
+                Glide.with(context)
+                    .load(R.drawable.icon_create_project)
+                    .into(holder.imageView)
+                return
+            }
         }
 
         holder.dateTimeView.text = project.lastModified
