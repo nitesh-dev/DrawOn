@@ -59,7 +59,6 @@ class HomeRecyclerViewAdapter(private val context: Context,private val adapterTy
             projectsData.add(tempPro)
             // Alert Box
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
