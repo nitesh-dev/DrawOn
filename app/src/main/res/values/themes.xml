@@ -17,4 +17,8 @@
         if you have better code then use it here    -->
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
     </style>
+
+    <style name="fullScreenTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="O_MR1">shortEdges</item>
+    </style>
 </resources>
