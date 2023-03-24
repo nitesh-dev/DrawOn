@@ -7,8 +7,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.WindowInsets
+import androidx.lifecycle.lifecycleScope
 import com.flaxstudio.drawon.databinding.ActivityMainBinding
 import com.flaxstudio.drawon.databinding.ActivitySplashScreenBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SplashScreenActivity : AppCompatActivity() {
 
@@ -37,9 +42,14 @@ class SplashScreenActivity : AppCompatActivity() {
         }
 
 
-        Handler().postDelayed({
-            startActivity(Intent(this , MainActivity::class.java))
-            finish()
-        },3000)
+        lifecycleScope.launch(Dispatchers.Default) {
+            delay(3000)
+            withContext(Dispatchers.Main){
+
+                val intent = Intent(applicationContext , MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 }
