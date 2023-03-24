@@ -28,4 +28,12 @@
         <item name="android:minHeight">48dp</item>
         <item name="elevation">0dp</item>
     </style>
+    
+    <style name="AppTheme.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="background" >@color/white</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>

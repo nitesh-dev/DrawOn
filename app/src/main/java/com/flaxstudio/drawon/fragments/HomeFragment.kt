@@ -55,7 +55,6 @@ class HomeFragment : Fragment() {
        TabLayoutMediator(binding.tabBarLayout , binding.viewPager){ tab , position ->
             tab.text = tabTitles[position]
 
-
         }.attach()
     }
 

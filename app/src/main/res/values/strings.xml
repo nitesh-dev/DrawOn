@@ -29,4 +29,8 @@
     <string name="untitled">Untitled</string>
     <string name="default_width">1280</string>
     <string name="default_height">720</string>
+    <string name="draw">Draw</string>
+    <string name="on">On</string>
+    <string name="tagline"># let\'s draw the change</string>
+    <string name="baseline">Developed by Team flax Studio</string>
 </resources>

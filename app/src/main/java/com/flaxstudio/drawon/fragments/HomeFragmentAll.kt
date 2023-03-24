@@ -58,7 +58,6 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }else{
-
                 adapter.longPressSelectedView!!.visibility = View.INVISIBLE
                 adapter.longPressSelectedView = null
             }
