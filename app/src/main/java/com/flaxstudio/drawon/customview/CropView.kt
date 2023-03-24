@@ -37,6 +37,8 @@ class CropView (context: Context, attrs: AttributeSet) : View(context, attrs) {
         isAntiAlias = true
     }
 
+    // TODO crop view not work on square image
+    // TODO drawing hide on width > 1280
 
     private val cropperTouchRadius = 20.toPx.toFloat()      // detect touch
     private val cropperPointSize = 8.toPx.toFloat()
@@ -51,6 +53,8 @@ class CropView (context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
+        // create the transparent check bitmap
         if(transparentBitmap == null) createTransparentBitmap()
         canvas.drawBitmap(transparentBitmap!!, 0f, 0f, null)
 

@@ -415,8 +415,11 @@
                     android:id="@+id/strokeSeekBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:max="100" />
+                    android:layout_marginTop="8dp"
+                    android:max="100"
+                    android:progress="40"
+                    android:progressTint="@color/pointer_color"
+                    android:thumbTint="@color/pointer_color" />
 
             </LinearLayout>
 

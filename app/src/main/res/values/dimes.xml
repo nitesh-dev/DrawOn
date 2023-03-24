@@ -2,4 +2,8 @@
 <resources>
     <dimen name="corner_radius">8dp</dimen>
     <dimen name="grid_spacing">24dp</dimen>
+
+
+    <dimen name="heading_text">24sp</dimen>
+    <dimen name="medium_text">16sp</dimen>
 </resources>

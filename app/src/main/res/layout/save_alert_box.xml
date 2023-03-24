@@ -1,57 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:background="@drawable/rect_bg_save"
     android:layout_gravity="center"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:background="@drawable/rect_bg_save"
+    android:orientation="vertical"
     android:padding="16dp">
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Save"
-        android:text="@string/save_text"
-        android:textSize="28sp"
-        android:textColor="@color/dark_blue"
-        android:layout_gravity="center"/>
-    <TextView
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/save_alert_message"
         android:layout_gravity="center"
+        android:text="@string/save_text"
         android:textColor="@color/dark_blue"
-        android:textSize="26sp"/>
+        android:textSize="@dimen/heading_text"
+        tools:text="Save" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/save_alert_message"
+        android:textAlignment="center"
+        android:textColor="@color/dark_blue"
+        android:textSize="@dimen/medium_text" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="60dp"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/cancel_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="@drawable/btn_bg_dialogue_box"
-            android:text="@string/cancel"
+            android:text="@string/quit"
             android:textAllCaps="false"
             android:textColor="@color/dark_blue"
-            android:textSize="22sp" />
+            android:textSize="@dimen/medium_text" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_save"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:background="@drawable/btn_bg_dialogue_box"
+            android:backgroundTint="@color/dark_blue"
             android:text="@string/save"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:backgroundTint="@color/dark_blue"
-            android:textSize="22sp"/>
+            android:textSize="@dimen/medium_text" />
     </LinearLayout>
 
 

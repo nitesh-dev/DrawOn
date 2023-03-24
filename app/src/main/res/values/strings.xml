@@ -18,16 +18,15 @@
     <string name="save_alert_message">Do you really want to quit without saving?</string>
     <string name="save_text">Save</string>
     <string name="create">Create</string>
-    <string name="create_alert_message">"Create a new project"</string>
+    <string name="create_alert_message">Create a new project</string>
     <string name="hint_title">Title</string>
     <string name="hint_height">Height</string>
     <string name="hint_width">Width</string>
     <string name="bnt_cancel">Cancel</string>
     <string name="btn_create">Create</string>
-    <string name="cancel">Cancel</string>
+    <string name="quit">Quit</string>
     <string name="save">Save</string>
-    <string name="draw">Draw</string>
-    <string name="On">On</string>
-    <string name="tagline"># let\'s draw the change</string>
-    <string name="baseline">Developed by Team Flax Studio</string>
+    <string name="untitled">Untitled</string>
+    <string name="default_width">1280</string>
+    <string name="default_height">720</string>
 </resources>

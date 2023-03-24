@@ -13,19 +13,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textColor="@color/dark_blue"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:text="@string/create" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginTop="20dp"
+        android:text="@string/create_alert_message"
         android:textColor="@color/dark_blue"
-        android:textSize="22sp"
-        android:text="@string/create_alert_message" />
+        android:textSize="@dimen/medium_text" />
 
 
     <EditText
@@ -33,14 +24,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="@drawable/btn_bg_dialogue_box"
+        android:autofillHints="Title"
+        android:background="@drawable/rounded_background"
         android:hint="@string/hint_title"
         android:inputType="text"
-        android:autofillHints="Title"
         android:minHeight="48dp"
         android:paddingVertical="8dp"
+        android:text="@string/untitled"
         android:textAlignment="center"
-        android:textSize="26sp" />
+        android:textColor="@color/dark_blue"
+        android:textColorHint="#94001662"
+        android:textSize="@dimen/medium_text" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,32 +43,38 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/et_length"
+            android:id="@+id/edit_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/btn_bg_dialogue_box"
-            android:hint="@string/hint_width"
-            android:textSize="26sp"
-            android:paddingVertical="8dp"
-            android:textAlignment="center"
             android:autofillHints="width"
+            android:background="@drawable/rounded_background"
+            android:hint="@string/hint_width"
             android:inputType="number"
+            android:paddingVertical="8dp"
+            android:text="@string/default_width"
+            android:textAlignment="center"
+            android:textColor="@color/dark_blue"
+            android:textColorHint="#94001662"
+            android:textSize="@dimen/medium_text"
             tools:ignore="TouchTargetSizeCheck" />
 
         <EditText
-            android:id="@+id/et_width"
+            android:id="@+id/edit_height"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:background="@drawable/btn_bg_dialogue_box"
-            android:hint="@string/hint_height"
-            android:textSize="26sp"
-            android:paddingVertical="8dp"
-            android:textAlignment="center"
             android:autofillHints="height"
+            android:background="@drawable/rounded_background"
+            android:hint="@string/hint_height"
             android:inputType="number"
+            android:paddingVertical="8dp"
+            android:text="@string/default_height"
+            android:textAlignment="center"
+            android:textColor="@color/dark_blue"
+            android:textColorHint="#94001662"
+            android:textSize="@dimen/medium_text"
             tools:ignore="TouchTargetSizeCheck" />
     </LinearLayout>
 
@@ -82,31 +82,32 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="50dp"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_cancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="@drawable/btn_bg_dialogue_box"
             android:text="@string/bnt_cancel"
             android:textAllCaps="false"
             android:textColor="@color/dark_blue"
-            android:textSize="22sp" />
+            android:textSize="@dimen/medium_text" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_create"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:background="@drawable/btn_bg_dialogue_box"
+            android:backgroundTint="@color/dark_blue"
             android:text="@string/btn_create"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:backgroundTint="@color/dark_blue"
-            android:textSize="22sp"/>
+            android:textSize="@dimen/medium_text" />
     </LinearLayout>
 </LinearLayout>

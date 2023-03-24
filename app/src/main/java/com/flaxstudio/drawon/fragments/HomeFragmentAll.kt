@@ -1,12 +1,17 @@
 package com.flaxstudio.drawon.fragments
 
-import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -132,7 +137,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     }
 
     private fun settingUp() {
-        adapter = HomeRecyclerViewAdapter(contextApp)
+        adapter = HomeRecyclerViewAdapter(contextApp,fragmentType)
         val gridLayoutManager = GridLayoutManager(contextApp, 2)
 
         // set adapter to recyclerview
@@ -169,9 +174,38 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
         }
     }
 
-    private fun openCreateProjectDialog() {
-        createNewProject("Draw 1", Size(1280, 720))
+
+    private fun openCreateProjectDialog(){
+
+        val alertBuilder = AlertDialog.Builder(requireContext())
+        val customAlertBox : View = layoutInflater.inflate(R.layout.create_project_alert_box , null)
+        alertBuilder.setView(customAlertBox)
+        val createProjectDialog = alertBuilder.create()
+        createProjectDialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        createProjectDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        customAlertBox.findViewById<Button>(R.id.btn_cancel).setOnClickListener {
+            createProjectDialog.dismiss()
+        }
+        customAlertBox.findViewById<Button>(R.id.btn_create).setOnClickListener {
+            val title = customAlertBox.findViewById<EditText>(R.id.et_title).text.toString()
+            val width = customAlertBox.findViewById<EditText>(R.id.edit_width).text.toString()
+            val height = customAlertBox.findViewById<EditText>(R.id.edit_height).text.toString()
+
+            if(title.isBlank()) Toast.makeText(contextApp, "Name must not be empty", Toast.LENGTH_SHORT).show()
+            else if(width.isBlank())Toast.makeText(contextApp, "Width must not be empty", Toast.LENGTH_SHORT).show()
+            else if(height.isBlank())Toast.makeText(contextApp, "Height must not be empty", Toast.LENGTH_SHORT).show()
+            else if(width.toInt() > 2000) Toast.makeText(contextApp, "Width must not be smaller than 2000", Toast.LENGTH_SHORT).show()
+            else if(height.toInt() > 2000) Toast.makeText(contextApp, "Height must not be smaller than 2000", Toast.LENGTH_SHORT).show()
+            else{
+                createNewProject(title, Size( width.toInt(), height.toInt()))
+                createProjectDialog.dismiss()
+            }
+        }
+
+        createProjectDialog.show()
     }
+
 
     private fun openProject(project: Project) {
 
