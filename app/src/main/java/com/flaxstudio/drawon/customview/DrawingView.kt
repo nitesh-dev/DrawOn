@@ -52,10 +52,13 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     // Note: Update needed
-    private val catchBitmap = Bitmap.createBitmap(1280, 720, Bitmap.Config.ARGB_8888)
-    private val canvasBitmap = Canvas(catchBitmap)
+    private var catchBitmap: Bitmap? = null
+    private lateinit var canvasBitmap: Canvas
     private var totalShapeDrawn = 0
     private var undoRedoFun: funUndoRedo? = null
+
+    private var isProjectSaved = true
+
     fun setUndoRedoListener(callback:funUndoRedo){
         undoRedoFun = callback
     }
@@ -76,10 +79,11 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         }else if(totalShapeDrawn < allShape.size){
 
             undoRedoFun?.invoke(allShape.isNotEmpty(), allShapeRedo.isNotEmpty())
-            onDrawBitmap(canvasBitmap)
+
+            if(catchBitmap != null) onDrawBitmap(canvasBitmap)
         }
 
-        canvas.drawBitmap(catchBitmap, 0F, 0F, null)
+        if(catchBitmap != null) canvas.drawBitmap(catchBitmap!!, 0F, 0F, null)
 
         // drawing current drawing shape
         if(isCurrentShapeDrawing){
@@ -90,7 +94,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private fun onDrawBitmap(canvas: Canvas, isDrawAll: Boolean = false){
 
         if(isDrawAll){
-            catchBitmap.eraseColor(Color.TRANSPARENT)
+            catchBitmap!!.eraseColor(Color.TRANSPARENT)
             for (shape in allShape){
                 drawShape(canvas, shape)
             }
@@ -364,6 +368,8 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
             MotionEvent.ACTION_UP -> {
                 if(isCurrentShapeDrawing){
 
+                    if(isProjectSaved) isProjectSaved = false
+
                     allShape.add(currentDrawingShape)
                     if(allShapeRedo.isNotEmpty()) allShapeRedo.clear()
                     isCurrentShapeDrawing = false
@@ -445,6 +451,10 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     fun setWhiteBoardSize(width: Int, height: Int){
         whiteBoardRect.right = width
         whiteBoardRect.bottom = height
+
+        catchBitmap = Bitmap.createBitmap(whiteBoardRect.width(), whiteBoardRect.height(), Bitmap.Config.ARGB_8888)
+        canvasBitmap = Canvas(catchBitmap!!)
+
     }
 
     private val maxUndoRedoRange = 10
@@ -462,6 +472,14 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         // creating bitmap
         onDrawBitmap(canvasBitmap, true)
         isRedrawAllowed = true
+    }
+
+    fun setProjectSaved(){
+        isProjectSaved = true
+    }
+
+    fun isProjectSaved(): Boolean{
+        return isProjectSaved
     }
 }
 

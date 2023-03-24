@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Button
@@ -42,15 +43,15 @@ class DrawFragment : Fragment() {
         MainActivityViewModelFactory((requireActivity().application as ProjectApplication).repository)
     }
     private lateinit var contextApp: Context
-    private var isProjectModified = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // used to handle back press
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if(isProjectModified){
-            // ask user to save project by show dialog
+            if(!binding.drawingView.isProjectSaved()){
+                // ask user to save project by show dialog
+                showSaveDialog()
             }else{
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -76,9 +77,6 @@ class DrawFragment : Fragment() {
         initialiseAnimation()
         addListeners()
         loadUiData()
-
-        // default
-        updatePropertiesPanelData(ShapeType.Rectangle)
     }
 
     private lateinit var panelCloseAnim: Animation
@@ -97,18 +95,7 @@ class DrawFragment : Fragment() {
 
         // save project
         binding.saveButton.setOnClickListener {
-
-            // saving project
-            mainActivityViewModel.saveProjectTask(
-                contextApp,
-                binding.drawingView.getCanvasBitmap(),
-                binding.drawingView.getToolData()
-            ){
-                Toast.makeText(contextApp, "Saved", Toast.LENGTH_SHORT).show()
-
-                // back to home
-                requireActivity().onBackPressedDispatcher.onBackPressed()
-            }
+            saveProject()
         }
 
         // favourite
@@ -303,6 +290,8 @@ class DrawFragment : Fragment() {
     // ui update work here
     private fun loadUiData() {
 
+        setupSaveDialog()
+
         mainActivityViewModel.loadProjectDataTask(contextApp){ toolsData ->
             if (toolsData != null) {
                 binding.drawingView.setToolData(toolsData)
@@ -318,7 +307,10 @@ class DrawFragment : Fragment() {
                 binding.drawingView.setWhiteBoardSize(width, height)
                 binding.drawingView.projectSavedBitmap = bitmap
                 binding.drawingView.invalidate()
+
             }
+            // default selected tool
+            updatePropertiesPanelData(ShapeType.Rectangle)
         }
     }
 
@@ -332,26 +324,53 @@ class DrawFragment : Fragment() {
     }
 
 
+    private fun saveProject(){
+        // saving project
+        mainActivityViewModel.saveProjectTask(
+            contextApp,
+            binding.drawingView.getCanvasBitmap(),
+            binding.drawingView.getToolData()
+        ){
+            binding.drawingView.setProjectSaved()
+            Toast.makeText(contextApp, "Saved", Toast.LENGTH_SHORT).show()
+
+            // back to home
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+
     // save alert dialog box
-    private fun saveAlert(){
+
+    private lateinit var saveDialog: AlertDialog
+    private fun setupSaveDialog(){
+
         val alertBuilder = AlertDialog.Builder(requireContext())
         val customAlertBox : View = layoutInflater.inflate(R.layout.save_alert_box , null)
         alertBuilder.setView(customAlertBox)
-        val dialog = alertBuilder.create()
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.show()
+        saveDialog = alertBuilder.create()
+        saveDialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        saveDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         customAlertBox.findViewById<Button>(R.id.cancel_btn).setOnClickListener {
-            dialog.dismiss()
-            // TODO handle the negative button click here
+
+            // closing without saving
+            binding.drawingView.setProjectSaved()
+            saveDialog.dismiss()
+
+            // back to home
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+
         }
         customAlertBox.findViewById<Button>(R.id.btn_save).setOnClickListener {
-
-            // TODO  handle the positive button click here
-            dialog.dismiss()
-            Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
-
+            // saving project before closing
+            saveProject()
+            saveDialog.dismiss()
         }
+    }
+
+    private fun showSaveDialog(){
+        saveDialog.show()
     }
 
 }

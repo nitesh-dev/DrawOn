@@ -14,6 +14,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -39,10 +40,10 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         add(ToolProperties(ShapeType.Line, Color.TRANSPARENT, Color.BLACK, 4f))
 
         // add Oval
-        add(ToolProperties(ShapeType.Oval, Color.GREEN, Color.BLACK, 4f))
+        add(ToolProperties(ShapeType.Oval, Color.RED, Color.BLACK, 4f))
 
         // add Triangle
-        add(ToolProperties(ShapeType.Triangle, Color.BLUE, Color.BLACK, 4f))
+        add(ToolProperties(ShapeType.Triangle, Color.RED, Color.BLACK, 4f))
 
         // add Eraser
         add(ToolProperties(ShapeType.Eraser, Color.TRANSPARENT, Color.WHITE, 80f))
@@ -102,6 +103,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
 
     fun loadProjectDataTask(context: Context, callback: (ArrayList<ToolProperties>?) -> Unit) = viewModelScope.launch(Dispatchers.Default){
 
+        delay(600)          // delay till animation over
         val json = loadProjectFromLocal(context, openedProject.projectId)
         withContext(Dispatchers.Main){
             callback(Gson().fromJson(json, object : TypeToken<ArrayList<ToolProperties>>() {}.type))
