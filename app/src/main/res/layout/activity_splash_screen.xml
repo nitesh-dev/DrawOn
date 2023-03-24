@@ -32,7 +32,7 @@
             android:id="@+id/tv_on"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/On"
+            android:text="@string/on"
             android:textSize="38sp"
             android:textStyle="bold"
             android:textColor="#F44336"
