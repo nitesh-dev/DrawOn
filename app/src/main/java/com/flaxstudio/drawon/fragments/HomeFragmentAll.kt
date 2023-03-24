@@ -138,7 +138,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     }
 
     private fun settingUp() {
-        adapter = HomeRecyclerViewAdapter(contextApp)
+        adapter = HomeRecyclerViewAdapter(contextApp,fragmentType)
         val gridLayoutManager = GridLayoutManager(contextApp, 2)
 
         // set adapter to recyclerview
