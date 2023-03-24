@@ -26,4 +26,8 @@
     <string name="btn_create">Create</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
+    <string name="draw">Draw</string>
+    <string name="On">On</string>
+    <string name="tagline"># let\'s draw the change</string>
+    <string name="baseline">Developed by Team Flax Studio</string>
 </resources>
