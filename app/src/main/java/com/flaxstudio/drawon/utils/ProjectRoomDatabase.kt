@@ -23,7 +23,7 @@ data class Project(
 
 @Dao
 interface ProjectDao {
-    @Query("SELECT * FROM projects")
+    @Query("SELECT * FROM projects ORDER BY last_modified DESC")
     fun getAllProjects(): List<Project>
 
     @Query("SELECT * FROM projects WHERE project_id = :id LIMIT 1")
