@@ -1,14 +1,8 @@
 package com.flaxstudio.drawon.customview
 
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -93,22 +87,26 @@ class CropView (context: Context, attrs: AttributeSet) : View(context, attrs) {
         var bitmapWidth = 0f
         var bitmapHeight = 0f
 
+        val screenHeight = (height - paddingTop - paddingBottom).toFloat()
+        val screenWidth = (width - paddingLeft - paddingRight).toFloat()
+
+
+        // algorithm to fit bitmap
         // creating scaled bitmap to fit screen
-        if(bitmap.width > bitmap.height){
-            val ratio = bitmap.height.toFloat() / bitmap.width
-            bitmapWidth = width.toFloat() - 2 * cropBitmapOffset
-            bitmapHeight = ratio * bitmapWidth
+        bitmapWidth = screenWidth
+        bitmapHeight = bitmapWidth / bitmap.width * bitmap.height
 
-            bitmapRect.left = cropBitmapOffset.toFloat()
-            bitmapRect.top = (height - bitmapHeight) / 2 + cropBitmapOffset
+        if(bitmapHeight > screenHeight){
+            bitmapHeight = screenHeight
+            bitmapWidth = bitmapHeight / bitmap.height * bitmap.width
+
+            bitmapRect.top = paddingTop.toFloat()
+            bitmapRect.left = (screenWidth - bitmapWidth) / 2 + paddingLeft.toFloat()
         }else{
-            val ratio = bitmap.width.toFloat() / bitmap.height
-            bitmapHeight = height.toFloat() - 2 * cropBitmapOffset
-            bitmapWidth = ratio * bitmapHeight
-
-            bitmapRect.left = (width - bitmapWidth) / 2 + cropBitmapOffset
-            bitmapRect.top = cropBitmapOffset.toFloat()
+            bitmapRect.top = (screenHeight - bitmapHeight) / 2 + paddingTop.toFloat()
+            bitmapRect.left = paddingLeft.toFloat()
         }
+
 
         scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmapWidth.toInt(), bitmapHeight.toInt(), true)
         bitmapRect.right = bitmapRect.left + bitmapWidth
