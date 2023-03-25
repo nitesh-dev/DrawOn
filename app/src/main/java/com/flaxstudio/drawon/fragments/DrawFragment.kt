@@ -305,8 +305,7 @@ class DrawFragment : Fragment() {
                 val width = mainActivityViewModel.openedProject.whiteboardWidth
                 val height = mainActivityViewModel.openedProject.whiteboardHeight
                 binding.drawingView.setWhiteBoardSize(width, height)
-                binding.drawingView.projectSavedBitmap = bitmap
-                binding.drawingView.invalidate()
+                binding.drawingView.setProjectSavedBitmap(bitmap)
 
             }
             // default selected tool

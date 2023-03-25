@@ -59,11 +59,38 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
             callback(projects)
         }
     }
-    fun createProjectTask(context: Context, project: Project, callback: () -> Unit) = viewModelScope.launch(Dispatchers.Default) {
-        saveProject(context, null, null)
-        repository.insert(project)
+    fun createProjectTask(context: Context, projectName: String, width: Int, height: Int, callback: (Project) -> Unit) = viewModelScope.launch(Dispatchers.Default) {
+
+        val projectId = generateUniqueId()
+        val projectBitmapId = generateUniqueId()
+        val dateTime = cDateTime.getDateTimeString()
+
+        val newProject = Project(
+            0,
+            projectId,
+            projectBitmapId,
+            projectName,
+            false,
+            dateTime,
+            dateTime,
+            width,
+            height
+        )
+
+        repository.insert(newProject)
+
+        // creating empty bitmap for new project
+        val emptyBitmap = Bitmap.createBitmap(newProject.whiteboardWidth, newProject.whiteboardHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(emptyBitmap)
+        canvas.drawRGB(255,255,255)
+
+        val json = Gson().toJson(defaultToolbarProperties)                       // creating json file for saving
+        saveBitmap(context, emptyBitmap, newProject.projectBitmapId)          // saving bitmap
+        saveProjectLocally(context, newProject.projectId, json)               // saving json file
+
+        //repository.update(openedProject)
         withContext(Dispatchers.Main){
-            callback()
+            callback(newProject)
         }
     }
 
@@ -84,7 +111,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         }
     }
 
-    fun saveProjectTask(context: Context, bitmap: Bitmap?, toolData: ArrayList<ToolProperties>?, callback: () -> Unit) = viewModelScope.launch (Dispatchers.Default) {
+    fun saveProjectTask(context: Context, bitmap: Bitmap, toolData: ArrayList<ToolProperties>, callback: () -> Unit) = viewModelScope.launch (Dispatchers.Default) {
 
         saveProject(context, bitmap, toolData)
         repository.update(openedProject)                    // updating database
@@ -129,30 +156,19 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
 
 
     // save and load functions
-    private fun saveProject(context: Context, bitmap: Bitmap?, toolData: ArrayList<ToolProperties>?){
+    private fun saveProject(context: Context, bitmap: Bitmap, toolData: ArrayList<ToolProperties>){
         Log.e("============", "ksdjfkjsdklfjsdfsdfsdf")
         // TODO "project not saving bug" on saving project after creating initial project.
 
         // deleting previous saved image
         deleteLocalFile(context, "${openedProject.projectBitmapId}.png")
 
-        val json = if(toolData == null){                                    // creating json file for saving
-                Gson().toJson(defaultToolbarProperties)
-            }else Gson().toJson(toolData)
+        val json = Gson().toJson(toolData)                                  // creating json file for saving
 
         openedProject.lastModified = cDateTime.getDateTimeString()          // setting current date time
         openedProject.projectBitmapId = generateUniqueId()                  // generating id for bitmap
 
-        // if bitmap is null then create a empty bitmap else save the bitmap
-        if(bitmap == null){
-
-            val emptyBitmap = Bitmap.createBitmap(openedProject.whiteboardWidth, openedProject.whiteboardHeight, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(emptyBitmap)
-            canvas.drawRGB(255,255,255)
-
-            saveBitmap(context, emptyBitmap, openedProject.projectBitmapId)
-        }else saveBitmap(context, bitmap, openedProject.projectBitmapId)
-
+        saveBitmap(context, bitmap, openedProject.projectBitmapId)          // saving bitmap
         saveProjectLocally(context, openedProject.projectId, json)          // saving json file
     }
 

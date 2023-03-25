@@ -20,6 +20,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     private val allShapeRedo: ArrayList<Shape> = ArrayList()                // redo
     private val allShape: ArrayList<Shape> = ArrayList()                    // undo
+
     private val toolsData: ArrayList<ToolProperties> = ArrayList()
     private val tempPath = Path()                   // this path is used by triangle
     private var isCurrentShapeDrawing = false
@@ -27,9 +28,9 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private var currentSelectedTool = ShapeType.Rectangle
     private var isRedrawAllowed = true
     private var canvasPosition = Vector2()
-    private val whiteBoardRect = Rect(0, 0, 1080, 720)
+    private val whiteBoardRect = Rect(0, 0, 0, 0)
     private var previousTouch = Vector2()
-    var projectSavedBitmap: Bitmap? = null
+    private var projectSavedBitmap: Bitmap? = null
 
     private var whiteBoardPaint = Paint().apply {
         isAntiAlias = true
@@ -427,6 +428,11 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         for (prop in data){
             toolsData.add(prop)
         }
+    }
+
+    fun setProjectSavedBitmap(bitmap: Bitmap?){
+        projectSavedBitmap = bitmap
+        invalidate()
     }
 
     fun updateToolData(tempToolData: ToolProperties){

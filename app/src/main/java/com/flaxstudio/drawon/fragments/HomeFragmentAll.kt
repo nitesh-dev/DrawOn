@@ -37,6 +37,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
     private lateinit var adapter: HomeRecyclerViewAdapter
     private val fragmentType: FragmentType
     private lateinit var contextApp: Context
+    private val cDateTime = CustomDateTime()
 
     init {
         this.fragmentType = fragmentType
@@ -213,30 +214,10 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
         findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
     }
 
-
-    private val cDateTime = CustomDateTime()
-
     private fun createNewProject(projectName: String, whiteBoardSize: Size) {
 
-        val projectId = mainActivityViewModel.generateUniqueId()
-        val dateTime = cDateTime.getDateTimeString()
-
-        val newProject = Project(
-            0,
-            projectId,
-            "",
-            projectName,
-            false,
-            dateTime,
-            dateTime,
-            whiteBoardSize.width,
-            whiteBoardSize.height
-        )
-
-        mainActivityViewModel.openedProject = newProject
-        mainActivityViewModel.createProjectTask(contextApp, newProject) {
-            findNavController().navigate(R.id.action_homeFragment_to_drawFragment)
+        mainActivityViewModel.createProjectTask(contextApp, projectName, whiteBoardSize.width, whiteBoardSize.height) { project ->
+            openProject(project)
         }
-
     }
 }
