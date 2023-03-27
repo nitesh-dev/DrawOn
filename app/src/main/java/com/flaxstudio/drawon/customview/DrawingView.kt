@@ -486,6 +486,13 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     fun isProjectSaved(): Boolean{
         return isProjectSaved
     }
+    fun cleanCanvas(){
+        allShape.clear()
+        allShapeRedo.clear()
+        projectSavedBitmap = null
+        invalidate()
+    }
+
 }
 
 

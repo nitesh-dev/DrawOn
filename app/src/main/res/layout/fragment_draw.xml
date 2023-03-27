@@ -103,11 +103,41 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageButton
+        android:id="@+id/buttonDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@string/app_name"
+        android:padding="8dp"
+        android:src="@drawable/icon_delete"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2"
+        tools:visibility="visible"
+        app:tint="?attr/colorOnPrimary" />
+
+    <ImageButton
         android:id="@+id/redoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:background="#FFFFFF"
+        android:padding="8dp"
+        android:src="@drawable/icon_redo"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@+id/undoButton"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2"
+        tools:visibility="visible"
+        android:contentDescription="@string/app_name" />
+
+    <ImageButton
+        android:id="@+id/redoButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@string/app_name"
         android:padding="8dp"
         android:src="@drawable/icon_redo"
         android:visibility="invisible"
@@ -126,7 +156,8 @@
         android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout2"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        android:contentDescription="@string/save" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -248,7 +279,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:padding="8dp"
-                android:text="Properties"
+                android:text="@string/properties"
                 android:textAlignment="textStart"
                 android:textColor="#292929"
                 android:textSize="16sp" />
@@ -270,7 +301,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Shape" />
+                    android:text="@string/shape" />
 
                 <TextView
                     android:id="@+id/selectedTool"
@@ -278,7 +309,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/outline_rect"
                     android:padding="4dp"
-                    android:text="Rectangle"
+                    android:text="@string/rectangle"
                     android:textAlignment="center"
                     android:textColor="@color/dark_blue" />
 
@@ -291,7 +322,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="12dp"
-                android:text="Appearance"
+                android:text="@string/appearance"
                 android:textColor="#494949"
                 android:textSize="16sp" />
 
@@ -309,7 +340,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1.5"
-                    android:text="Stroke Color" />
+                    android:text="@string/stroke_color" />
 
                 <LinearLayout
                     android:id="@+id/strokeColorContainer"
@@ -331,7 +362,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
-                        android:text="#ff22ffaa"
+                        android:text="@string/ff22ffaa"
                         android:textAlignment="center"
                         android:textColor="@color/dark_blue" />
                 </LinearLayout>

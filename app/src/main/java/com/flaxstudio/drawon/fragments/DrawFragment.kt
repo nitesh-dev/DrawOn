@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build.VERSION_CODES.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -207,6 +209,9 @@ class DrawFragment : Fragment() {
             updateDrawingCanvas()
         }
 
+        binding.buttonDelete.setOnClickListener {
+            updateCanvas()
+        }
         binding.drawingView.setUndoRedoListener { isUndoVisible, isRedoVisible ->
             if (isUndoVisible) binding.undoButton.visibility =
                 View.VISIBLE else binding.undoButton.visibility = View.INVISIBLE
@@ -215,8 +220,6 @@ class DrawFragment : Fragment() {
         }
 
         // project export
-        binding.exportButton.setOnClickListener {
-
 
             mainActivityViewModel.saveBitmapTask(contextApp, binding.drawingView.getCanvasBitmap(),  "export-bitmap"){
                 val intent = Intent(activity, ProjectExportActivity::class.java)
@@ -224,6 +227,10 @@ class DrawFragment : Fragment() {
                 startActivity(intent)
             }
         }
+    }
+
+    private fun updateCanvas() {
+        binding.drawingView.cleanCanvas()
     }
 
     private var tempToolProperties: ToolProperties? = null
@@ -344,7 +351,7 @@ class DrawFragment : Fragment() {
     private lateinit var saveDialog: AlertDialog
     private fun setupSaveDialog(){
 
-        val alertBuilder = AlertDialog.Builder(requireContext())
+        val alertBuilder = AlertDialog.Builder(contextApp)
         val customAlertBox : View = layoutInflater.inflate(R.layout.save_alert_box , null)
         alertBuilder.setView(customAlertBox)
         saveDialog = alertBuilder.create()

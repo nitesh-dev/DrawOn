@@ -33,4 +33,10 @@
     <string name="on">On</string>
     <string name="tagline"># let\'s draw the change</string>
     <string name="baseline">Developed by Team flax Studio</string>
+    <string name="properties">Properties</string>
+    <string name="shape">Shape</string>
+    <string name="rectangle">Rectangle</string>
+    <string name="appearance">Appearance</string>
+    <string name="stroke_color">Stroke Color</string>
+    <string name="ff22ffaa">#ff22ffaa</string>
 </resources>
