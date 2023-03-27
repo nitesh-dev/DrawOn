@@ -17,7 +17,7 @@ data class Project(
     @ColumnInfo(name = "whiteboard_width") var whiteboardWidth: Int,
     @ColumnInfo(name = "whiteboard_height") var whiteboardHeight: Int,
 
-    ){
+    ) {
 
 }
 
@@ -29,8 +29,14 @@ interface ProjectDao {
     @Query("SELECT * FROM projects WHERE project_id = :id LIMIT 1")
     fun getProjectById(id: String): Project
 
-    @Update
-    fun updateProject(project: Project)
+    @Query("UPDATE projects SET project_bitmap_id = :projectBitmapId, project_name = :projectName, is_fav = :isFavourite, last_modified = :lastModified WHERE project_id = :projectId")
+    fun updateProject(
+        projectId: String,
+        projectBitmapId: String,
+        projectName: String,
+        isFavourite: Boolean,
+        lastModified: String
+    )
 
     @Insert
     fun addProject(project: Project)
@@ -38,6 +44,7 @@ interface ProjectDao {
     @Delete
     fun deleteProject(project: Project)
 }
+
 class ProjectRepository(private val projectDao: ProjectDao) {
 
 
@@ -48,13 +55,19 @@ class ProjectRepository(private val projectDao: ProjectDao) {
     }
 
     @WorkerThread
-    suspend fun getAllProjects(): List<Project>{
+    suspend fun getAllProjects(): List<Project> {
         return projectDao.getAllProjects()
     }
 
     @WorkerThread
     suspend fun update(project: Project) {
-        projectDao.updateProject(project)
+        projectDao.updateProject(
+            project.projectId,
+            project.projectBitmapId,
+            project.projectName,
+            project.isFavourite,
+            project.lastModified
+        )
     }
 
 
@@ -69,9 +82,11 @@ class ProjectRepository(private val projectDao: ProjectDao) {
     }
 
 }
+
 @Database(entities = [Project::class], version = 1, exportSchema = false)
 abstract class AppProjectDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
+
     companion object {
         // Singleton prevents multiple instances of database opening at the
         // same time.

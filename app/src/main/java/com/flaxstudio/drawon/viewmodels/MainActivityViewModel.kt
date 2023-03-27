@@ -84,7 +84,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         val canvas = Canvas(emptyBitmap)
         canvas.drawRGB(255,255,255)
 
-        val json = Gson().toJson(defaultToolbarProperties)                       // creating json file for saving
+        val json = Gson().toJson(defaultToolbarProperties)                    // creating json file for saving
         saveBitmap(context, emptyBitmap, newProject.projectBitmapId)          // saving bitmap
         saveProjectLocally(context, newProject.projectId, json)               // saving json file
 
