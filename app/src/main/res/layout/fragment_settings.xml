@@ -72,44 +72,6 @@
         app:layout_constraintTop_toBottomOf="@id/setting_app_bar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/container_reset"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:padding="10dp">
-
-            <ImageView
-                android:id="@+id/img_reset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/icon_reset"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_reset"
-                style="@style/textStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@string/reset_to_default"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/img_reset"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/icon_arrow_right"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -118,8 +80,8 @@
 
             <ImageView
                 android:id="@+id/img_share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/icon_share"
                 app:layout_constraintStart_toStartOf="parent"
@@ -156,8 +118,8 @@
 
             <ImageView
                 android:id="@+id/img_rate_us"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/icon_rate"
                 app:layout_constraintStart_toStartOf="parent"
@@ -195,8 +157,8 @@
 
             <ImageView
                 android:id="@+id/img_feedback"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/icon_feedback"
                 app:layout_constraintStart_toStartOf="parent"
@@ -233,8 +195,8 @@
 
             <ImageView
                 android:id="@+id/img_privacy_policy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/icon_privacy"
                 app:layout_constraintStart_toStartOf="parent"
@@ -272,8 +234,8 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/icon_developers"
                 app:layout_constraintStart_toStartOf="parent"

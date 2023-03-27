@@ -1,16 +1,14 @@
 package com.flaxstudio.drawon.fragments
 
-import android.app.Dialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.addCallback
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.flaxstudio.drawon.R
 import com.flaxstudio.drawon.databinding.FragmentSettingsBinding
 
 
@@ -28,10 +26,12 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         // Back Clicked
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
+
         // share Clicked
         binding.containerShare.setOnClickListener{
             val sendIntent : Intent = Intent().apply {
@@ -47,14 +47,16 @@ class SettingsFragment : Fragment() {
         binding.containerRateUs.setOnClickListener {
             Toast.makeText(context,"Added Soon...",Toast.LENGTH_SHORT).show()
         }
+
         // feedback clicked
         binding.containerFeedback.setOnClickListener{
             Toast.makeText(context,"Added Soon...",Toast.LENGTH_SHORT).show()
         }
 
-        // Privacy Policy container clicked
+        // Privacy Policy
         binding.containerPrivacyPolicy.setOnClickListener {
-            findNavController().navigate(R.id.action_settingsFragment_to_privacyFragment)
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://nitesh-dev.github.io/DrawOn/privacy_policy"))
+            startActivity(browserIntent)
         }
     }
 
