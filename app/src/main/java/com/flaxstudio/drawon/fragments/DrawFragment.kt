@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -14,8 +13,12 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
 import android.widget.SeekBar
+import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
@@ -33,7 +36,6 @@ import com.flaxstudio.drawon.viewmodels.MainActivityViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 
 
 class DrawFragment : Fragment() {
@@ -92,6 +94,29 @@ class DrawFragment : Fragment() {
     private var isFillColorContainerSelected = false
 
     private fun addListeners() {
+
+        // your text box
+
+        binding.fileName.setOnEditorActionListener(OnEditorActionListener { view, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                val text = view.text.toString().trim()
+                if(text.isBlank()){
+                    Toast.makeText(contextApp, "Name must not be empty", Toast.LENGTH_SHORT).show()
+                    return@OnEditorActionListener false
+                }else{
+
+                    mainActivityViewModel.renameProjectTask(text)
+                    view.clearFocus()
+                    // hide keyboard after done
+                    val imm = contextApp.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                    Toast.makeText(contextApp, "Renamed", Toast.LENGTH_SHORT).show()
+                    return@OnEditorActionListener true
+                }
+            }
+            false
+        })
 
         // save project
         binding.saveButton.setOnClickListener {

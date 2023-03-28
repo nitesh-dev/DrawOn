@@ -6,4 +6,5 @@
 
     <dimen name="heading_text">24sp</dimen>
     <dimen name="medium_text">16sp</dimen>
+    <dimen name="x_medium_text">18sp</dimen>
 </resources>

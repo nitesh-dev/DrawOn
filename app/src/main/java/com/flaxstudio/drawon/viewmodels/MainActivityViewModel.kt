@@ -108,6 +108,12 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         }
     }
 
+    fun renameProjectTask(newName: String) = viewModelScope.launch(Dispatchers.Default) {
+        openedProject.projectName = newName
+        openedProject.lastModified = cDateTime.getDateTimeString()
+        repository.update(openedProject)
+    }
+
     fun deleteProjectTask(context: Context , project: Project, callback: () -> Unit) = viewModelScope.launch  (Dispatchers.Default){
         repository.delete(project)
         deleteLocalFile(context, project.projectId + ".json")

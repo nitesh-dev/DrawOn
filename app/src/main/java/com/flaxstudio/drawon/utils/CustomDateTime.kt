@@ -2,6 +2,7 @@ package com.flaxstudio.drawon.utils
 
 import android.os.Build
 import org.ocpsoft.prettytime.PrettyTime
+import org.ocpsoft.prettytime.units.Millisecond
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -25,21 +26,43 @@ class CustomDateTime {
     }
 
     fun getDateTimeInWord(dateTimeString: String): String {
-        val prettyTime = PrettyTime()
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
+        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val now = LocalDateTime.now()
             val savedDateTime = LocalDateTime.parse(
                 dateTimeString,
                 DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
             )
-            return prettyTime.format(savedDateTime) ?: ""
+            val deltaSeconds = now.toEpochSecond(ZoneOffset.UTC) - savedDateTime.toEpochSecond(ZoneOffset.UTC)
+            getTimeAgo(deltaSeconds)
 
         }else{
+            val now = Calendar.getInstance()
             val formatter = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
             val savedDateTime = formatter.parse(dateTimeString)
-            return prettyTime.format(savedDateTime) ?: ""
+            val deltaSeconds = (now.time.time - savedDateTime!!.time) / 1000
+           getTimeAgo(deltaSeconds)
         }
+    }
 
+    private fun getTimeAgo(diffSecond: Long): String {
+
+        val minutes = diffSecond / 60
+        val hours = minutes / 60
+        val days = hours / 24
+        val weeks = days / 7
+        val months = days / 30
+        val years = days / 365
+
+        return when {
+            years > 0 -> "$years years ago"
+            months > 0 -> "$months months ago"
+            weeks > 0 -> "$weeks weeks ago"
+            days > 0 -> "$days days ago"
+            hours > 0 -> "$hours hours ago"
+            minutes > 0 -> "$minutes minutes ago"
+            else -> "just now"
+        }
     }
 
     fun parseTimeString(dateTime: String): String{
