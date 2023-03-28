@@ -137,7 +137,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
 
     fun loadProjectDataTask(context: Context, callback: (ArrayList<ToolProperties>?) -> Unit) = viewModelScope.launch(Dispatchers.Default){
 
-        delay(600)          // delay till animation over
+        delay(800)          // delay till animation over
         val json = loadProjectFromLocal(context, openedProject.projectId)
         withContext(Dispatchers.Main){
             callback(Gson().fromJson(json, object : TypeToken<ArrayList<ToolProperties>>() {}.type))
