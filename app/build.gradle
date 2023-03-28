@@ -47,7 +47,7 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
     // color picker library
-    implementation 'com.github.ab44gl:ColorPicker-Android:+'
+    implementation 'com.github.kr-abhi55:ColorPicker-Android:2.0.1'
 
     // room
     def room_version = "2.5.0"

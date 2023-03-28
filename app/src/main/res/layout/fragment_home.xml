@@ -31,6 +31,19 @@
                 tools:layout_editor_absoluteX="0dp" />
 
             <ImageButton
+                android:id="@+id/favouriteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/app_name"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:src="@drawable/icon_heart_fill"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_setting"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
                 android:id="@+id/btn_setting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

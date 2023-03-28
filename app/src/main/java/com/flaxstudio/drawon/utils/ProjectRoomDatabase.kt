@@ -26,6 +26,9 @@ interface ProjectDao {
     @Query("SELECT * FROM projects ORDER BY last_modified DESC")
     fun getAllProjects(): List<Project>
 
+    @Query("SELECT * FROM projects WHERE is_fav = 1 ORDER BY last_modified DESC")
+    fun getAllFavouriteProjects(): List<Project>
+
     @Query("SELECT * FROM projects WHERE project_id = :id LIMIT 1")
     fun getProjectById(id: String): Project
 
@@ -57,6 +60,11 @@ class ProjectRepository(private val projectDao: ProjectDao) {
     @WorkerThread
     suspend fun getAllProjects(): List<Project> {
         return projectDao.getAllProjects()
+    }
+
+    @WorkerThread
+    suspend fun getAllFavouriteProjects(): List<Project>{
+        return projectDao.getAllFavouriteProjects()
     }
 
     @WorkerThread

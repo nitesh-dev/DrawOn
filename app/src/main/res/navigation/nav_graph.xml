@@ -29,10 +29,30 @@
             app:exitAnim="@anim/slide_left_to_left"
             app:popEnterAnim="@anim/slide_in_right"
             app:popExitAnim="@anim/slide_right_to_right" />
+        <action
+            android:id="@+id/action_homeFragment_to_favouriteFragment"
+            app:destination="@id/favouriteFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_left_to_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_right_to_right"/>
     </fragment>
     <fragment
         android:id="@+id/drawFragment"
         android:name="com.flaxstudio.drawon.fragments.DrawFragment"
         android:label="fragment_draw"
         tools:layout="@layout/fragment_draw" />
+    <fragment
+        android:id="@+id/favouriteFragment"
+        android:name="com.flaxstudio.drawon.fragments.FavouriteFragment"
+        android:label="fragment_favourite"
+        tools:layout="@layout/fragment_favourite" >
+        <action
+            android:id="@+id/action_favouriteFragment_to_drawFragment"
+            app:destination="@id/drawFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_left_to_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_right_to_right"/>
+    </fragment>
 </navigation>

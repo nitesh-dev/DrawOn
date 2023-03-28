@@ -59,6 +59,13 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
             callback(projects)
         }
     }
+
+    fun getAllFavouriteProjectsTask(callback: (List<Project>) -> Unit) = viewModelScope.launch(Dispatchers.Default){
+        val projects = repository.getAllFavouriteProjects()
+        withContext(Dispatchers.Main){
+            callback(projects)
+        }
+    }
     fun createProjectTask(context: Context, projectName: String, width: Int, height: Int, callback: (Project) -> Unit) = viewModelScope.launch(Dispatchers.Default) {
 
         val projectId = generateUniqueId()
@@ -157,8 +164,6 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
 
     // save and load functions
     private fun saveProject(context: Context, bitmap: Bitmap, toolData: ArrayList<ToolProperties>){
-        Log.e("============", "ksdjfkjsdklfjsdfsdfsdf")
-        // TODO "project not saving bug" on saving project after creating initial project.
 
         // deleting previous saved image
         deleteLocalFile(context, "${openedProject.projectBitmapId}.png")
