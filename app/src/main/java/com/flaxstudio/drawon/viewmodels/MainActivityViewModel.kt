@@ -185,7 +185,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
 
 
     // the below function will generate unique id
-    fun generateUniqueId(): String{
+    private fun generateUniqueId(): String{
         return System.currentTimeMillis().toString()
     }
 

@@ -1,10 +1,9 @@
 package com.flaxstudio.drawon.utils
 
 import android.os.Build
+import org.ocpsoft.prettytime.PrettyTime
 import java.text.SimpleDateFormat
-import java.time.Duration
 import java.time.LocalDateTime
-import java.time.Period
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -23,6 +22,24 @@ class CustomDateTime {
             val simpleDateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
             simpleDateFormat.format(calendar.time)
         }
+    }
+
+    fun getDateTimeInWord(dateTimeString: String): String {
+        val prettyTime = PrettyTime()
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            val savedDateTime = LocalDateTime.parse(
+                dateTimeString,
+                DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
+            )
+            return prettyTime.format(savedDateTime) ?: ""
+
+        }else{
+            val formatter = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+            val savedDateTime = formatter.parse(dateTimeString)
+            return prettyTime.format(savedDateTime) ?: ""
+        }
+
     }
 
     fun parseTimeString(dateTime: String): String{

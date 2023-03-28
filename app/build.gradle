@@ -40,6 +40,9 @@ android {
 
 dependencies {
 
+    // time library
+    implementation 'org.ocpsoft.prettytime:prettytime:5.0.0.Final'
+
     // shimmer
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 

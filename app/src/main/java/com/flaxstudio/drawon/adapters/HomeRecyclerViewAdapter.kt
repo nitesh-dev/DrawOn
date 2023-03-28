@@ -17,6 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
 import com.flaxstudio.drawon.R
+import com.flaxstudio.drawon.utils.CustomDateTime
 import com.flaxstudio.drawon.utils.FragmentType
 import com.flaxstudio.drawon.utils.Project
 
@@ -26,6 +27,7 @@ class HomeRecyclerViewAdapter(private val context: Context,private val adapterTy
     private var itemClickListener:((position:Int, project: Project)->Unit)? = null
     private var itemFavClickListener:((position:Int, project: Project)->Unit)? = null
     private var projectDeleteListener:((position:Int, project: Project)->Unit)? = null
+    private val customDateTime = CustomDateTime()
 
     var longPressSelectedView: RelativeLayout? = null                   // null means no selection
 
@@ -54,7 +56,7 @@ class HomeRecyclerViewAdapter(private val context: Context,private val adapterTy
         projectsData.clear()
 
         // Note: the below project is just to add 1 more element for creating new project only
-        if (adapterType == FragmentType.All|| adapterType == FragmentType.Today) {
+        if (adapterType == FragmentType.Today) {
             val tempPro = Project(0, "", "", "", false, "", "", 0, 0)
             projectsData.add(tempPro)
             // Alert Box
@@ -75,7 +77,7 @@ class HomeRecyclerViewAdapter(private val context: Context,private val adapterTy
         val project = projectsData[position]
 
         // 0 index of array is reserved for creating new project only
-        if (adapterType == FragmentType.All|| adapterType == FragmentType.Today) {
+        if (adapterType == FragmentType.Today) {
             if (position == 0) {
                 holder.linearLayout.visibility = View.INVISIBLE
                 holder.favButton.visibility = View.INVISIBLE
@@ -86,12 +88,12 @@ class HomeRecyclerViewAdapter(private val context: Context,private val adapterTy
             }
         }
 
-        holder.dateTimeView.text = project.lastModified
+        holder.dateTimeView.text = customDateTime.getDateTimeInWord(project.lastModified)
         holder.nameView.text = project.projectName
         holder.favButton.isChecked = project.isFavourite
 
         val path = "${context.filesDir}/${project.projectBitmapId}.png"
-        Log.e("=============", path)
+
         Glide.with(context)
             .load(path)
             .error(R.drawable.not_found_image)
