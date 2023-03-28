@@ -51,6 +51,11 @@ class FavouriteFragment : Fragment() {
 
         contextApp = requireContext()
         loadRecyclerViewDataInBackground()
+
+        // Back Clicked
+        binding.btnBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     private fun loadRecyclerViewDataInBackground() = lifecycleScope.launch{

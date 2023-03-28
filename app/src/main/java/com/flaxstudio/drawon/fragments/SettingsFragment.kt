@@ -29,7 +29,7 @@ class SettingsFragment : Fragment() {
 
         // Back Clicked
         binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
         // share Clicked
