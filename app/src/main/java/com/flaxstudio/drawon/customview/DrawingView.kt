@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.lifecycleScope
+import com.abhishek.colorpicker.toPx
 import com.flaxstudio.drawon.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -450,11 +451,17 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         currentSelectedTool = toolType
     }
     fun setWhiteBoardSize(width: Int, height: Int){
+        // note this function is calling after some delay
         whiteBoardRect.right = width
         whiteBoardRect.bottom = height
 
         catchBitmap = Bitmap.createBitmap(whiteBoardRect.width(), whiteBoardRect.height(), Bitmap.Config.ARGB_8888)
         canvasBitmap = Canvas(catchBitmap!!)
+
+//      calculating default translate
+        val top = measuredHeight / 2f - height / 2
+        val left = 30.toPx.toFloat()
+        canvasPosition.setValue(left, top)
 
     }
 
