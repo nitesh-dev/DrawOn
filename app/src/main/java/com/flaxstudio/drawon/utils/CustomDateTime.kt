@@ -1,8 +1,6 @@
 package com.flaxstudio.drawon.utils
 
 import android.os.Build
-import org.ocpsoft.prettytime.PrettyTime
-import org.ocpsoft.prettytime.units.Millisecond
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneOffset
