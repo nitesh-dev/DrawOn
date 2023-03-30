@@ -126,7 +126,7 @@
         android:layout_margin="8dp"
         android:background="#FFFFFF"
         android:padding="8dp"
-        android:src="@drawable/icon_redo"
+        android:src="@drawable/icon_clear_all"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout2" />
 

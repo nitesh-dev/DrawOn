@@ -56,7 +56,7 @@ class DrawFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if(!binding.drawingView.isProjectSaved()){
                 // ask user to save project by show dialog
-                showSaveDialog()
+                saveDialog.show()
             }else{
                 isEnabled = false
                 requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -89,7 +89,7 @@ class DrawFragment : Fragment() {
     private fun addListeners() {
 
         binding.clearAll.setOnClickListener {
-
+            clearAllDialog.show()
         }
 
         // your text box
@@ -324,6 +324,7 @@ class DrawFragment : Fragment() {
     private fun loadUiData() {
 
         setupSaveDialog()
+        setupClearAllDialog()
 
         mainActivityViewModel.loadProjectDataTask(contextApp){ toolsData ->
             if (toolsData != null) {
@@ -401,8 +402,27 @@ class DrawFragment : Fragment() {
         }
     }
 
-    private fun showSaveDialog(){
-        saveDialog.show()
+    private lateinit var clearAllDialog: AlertDialog
+    private fun setupClearAllDialog(){
+
+        val alertBuilder = AlertDialog.Builder(requireContext())
+        val customAlertBox : View = layoutInflater.inflate(R.layout.clear_canvas_alert_box , null)
+        alertBuilder.setView(customAlertBox)
+        clearAllDialog = alertBuilder.create()
+        clearAllDialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+        clearAllDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        customAlertBox.findViewById<Button>(R.id.btn_clear_all).setOnClickListener {
+
+            // clear the canvas
+            binding.drawingView.clearCanvas()
+            clearAllDialog.hide()
+
+        }
+        customAlertBox.findViewById<Button>(R.id.cancel_btn).setOnClickListener {
+            clearAllDialog.hide()
+        }
     }
+
 
 }

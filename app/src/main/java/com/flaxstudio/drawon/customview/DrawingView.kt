@@ -432,7 +432,8 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     fun setProjectSavedBitmap(bitmap: Bitmap?){
-        projectSavedBitmap = bitmap
+        if(bitmap == null) return
+        projectSavedBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         invalidate()
     }
 
@@ -465,7 +466,6 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     }
 
-    private val maxUndoRedoRange = 10
     fun undo(){
         if(allShape.size == 0) return
         allShapeRedo.add(allShape.removeLast())
@@ -477,7 +477,14 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     fun clearCanvas(){
-
+        if(projectSavedBitmap == null) return
+        allShape.clear()
+        allShapeRedo.clear()
+        projectSavedBitmap!!.eraseColor(Color.WHITE)
+        onDrawBitmap(canvasBitmap, true)
+        isProjectSaved = false
+        isRedrawAllowed = true
+        invalidate()
     }
 
     suspend fun reDraw(){
