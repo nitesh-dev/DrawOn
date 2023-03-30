@@ -1,5 +1,7 @@
 package com.flaxstudio.drawon.fragments
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
@@ -7,6 +9,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,27 +79,20 @@ class DrawFragment : Fragment() {
 
         contextApp = requireContext()
         colorPickerDialog = ColorPickerDialog()
-        initialiseAnimation()
         addListeners()
         loadUiData()
     }
 
-    private lateinit var panelCloseAnim: Animation
-    private lateinit var panelOpenAnim: Animation
 
-    private fun initialiseAnimation() {
-        panelCloseAnim = AnimationUtils.loadAnimation(contextApp, R.anim.prop_panel_close)
-        panelOpenAnim = AnimationUtils.loadAnimation(contextApp, R.anim.prop_panel_open)
-    }
-
-
-    private var isPropertiesPanelVisible = false
     private var isFillColorContainerSelected = false
 
     private fun addListeners() {
 
-        // your text box
+        binding.clearAll.setOnClickListener {
 
+        }
+
+        // your text box
         binding.fileName.setOnEditorActionListener(OnEditorActionListener { view, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
@@ -296,13 +292,25 @@ class DrawFragment : Fragment() {
     }
 
     private fun togglePropertiesPanel() {
-        binding.propertiesPanel.visibility = View.VISIBLE
-        if (isPropertiesPanelVisible) {
-            isPropertiesPanelVisible = false
-            binding.propertiesPanel.startAnimation(panelCloseAnim)
-        } else {
-            isPropertiesPanelVisible = true
-            binding.propertiesPanel.startAnimation(panelOpenAnim)
+
+        if(binding.propertiesPanel.visibility == View.VISIBLE){     // panel close animation
+
+            val animator = binding.propertiesPanel.animate().translationY(resources.getDimension(R.dimen.panel_translate)).alpha(0f).setDuration(200)
+            animator.setListener(object: AnimatorListenerAdapter(){
+                override fun onAnimationEnd(animation: Animator) {
+                    binding.propertiesPanel.visibility = View.INVISIBLE
+                }
+            })
+
+        }else{                                                      // panel open animation
+            binding.propertiesPanel.alpha = 0f
+            binding.propertiesPanel.translationY = resources.getDimension(R.dimen.panel_translate)
+            val animator = binding.propertiesPanel.animate().translationY(0f).alpha(1f).setDuration(200)
+            animator.setListener(object: AnimatorListenerAdapter(){
+                override fun onAnimationStart(animation: Animator) {
+                    binding.propertiesPanel.visibility = View.VISIBLE
+                }
+            })
         }
     }
 

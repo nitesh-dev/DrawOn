@@ -8,6 +8,7 @@
     tools:context=".fragments.DrawFragment">
 
     <!-- AppBar layout for using Toolbar as AppBar -->
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout2"
         android:layout_width="0dp"
@@ -117,6 +118,17 @@
         app:layout_constraintStart_toEndOf="@+id/undoButton"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout2"
         tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/clear_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        android:src="@drawable/icon_redo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2" />
 
     <ImageButton
         android:id="@+id/undoButton"
