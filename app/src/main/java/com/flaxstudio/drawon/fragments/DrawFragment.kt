@@ -85,6 +85,7 @@ class DrawFragment : Fragment() {
 
 
     private var isFillColorContainerSelected = false
+    private var isColorPickerOpened = false
 
     private fun addListeners() {
 
@@ -167,6 +168,7 @@ class DrawFragment : Fragment() {
         // color picker dialog
         colorPickerDialog.setOnOkCancelListener { isOk, color ->
 
+            isColorPickerOpened = false
             // setting color
             if (isOk) {
                 if (isFillColorContainerSelected) {
@@ -207,11 +209,15 @@ class DrawFragment : Fragment() {
         })
 
         binding.strokeColorContainer.setOnClickListener {
+            if(isColorPickerOpened) return@setOnClickListener
+            isColorPickerOpened = true
             isFillColorContainerSelected = false
             colorPickerDialog.show(parentFragmentManager)
         }
 
         binding.fillColorContainer.setOnClickListener {
+            if(isColorPickerOpened) return@setOnClickListener
+            isColorPickerOpened = true
             isFillColorContainerSelected = true
             colorPickerDialog.show(parentFragmentManager)
         }
