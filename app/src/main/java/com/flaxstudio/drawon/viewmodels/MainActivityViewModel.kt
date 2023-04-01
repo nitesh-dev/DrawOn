@@ -48,6 +48,9 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         // add Eraser
         add(ToolProperties(ShapeType.Eraser, Color.TRANSPARENT, Color.WHITE, 80f))
 
+        // add Heart
+        add(ToolProperties(ShapeType.Heart, Color.RED, Color.BLACK, 4f))
+
         // do more...
     }
 

@@ -14,6 +14,11 @@ data class Vector2(var x: Float = 0f, var y: Float = 0f) {
         return Vector2(this.x - (this.x - vector.x)/2, this.y - (this.y - vector.y)/2)
     }
 
+    fun addOffset(x: Float, y: Float){
+        this.x += x
+        this.y += y
+    }
+
     operator fun plus(vector: Vector2): Vector2 {
         return Vector2(this.x + vector.x, this.y + vector.y)
     }
@@ -79,6 +84,14 @@ class Triangle: Shape() {
     var endPos = Vector2()
     init {
         shapeType = ShapeType.Triangle
+    }
+}
+
+class Heart: Shape() {
+    var startPos = Vector2()
+    var endPos = Vector2()
+    init {
+        shapeType = ShapeType.Heart
     }
 }
 
@@ -165,11 +178,6 @@ class EraserRaw: Shape(){
 
 
 
-data class ProjectData(
-    val allSavedShapes: ArrayList<Shape> = ArrayList(),
-    var toolsData: ArrayList<ToolProperties> = ArrayList()
-)
-
 data class ToolProperties(
     var shapeType: ShapeType = ShapeType.Rectangle,
     var fillColor: Int = Color.RED,
@@ -183,7 +191,8 @@ enum class ShapeType{
     Line,
     Brush,
     Eraser,
-    Triangle
+    Triangle,
+    Heart
 }
 
 enum class FragmentType{

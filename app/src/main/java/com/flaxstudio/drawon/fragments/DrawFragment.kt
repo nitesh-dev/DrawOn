@@ -94,7 +94,7 @@ class DrawFragment : Fragment() {
         }
 
         // your text box
-        binding.fileName.setOnEditorActionListener(OnEditorActionListener { view, actionId, event ->
+        binding.fileName.setOnEditorActionListener(OnEditorActionListener { view, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
                 val text = view.text.toString().trim()
@@ -155,6 +155,10 @@ class DrawFragment : Fragment() {
                 R.id.toolEraser -> {
                     binding.drawingView.setSelectedTool(ShapeType.Eraser)
                     updatePropertiesPanelData(ShapeType.Eraser)
+                }
+                R.id.toolHeart -> {
+                    binding.drawingView.setSelectedTool(ShapeType.Heart)
+                    updatePropertiesPanelData(ShapeType.Heart)
                 }
             }
         }
@@ -280,6 +284,9 @@ class DrawFragment : Fragment() {
                 binding.fillColorParent.visibility = View.VISIBLE
             }
             ShapeType.Triangle -> {
+                binding.fillColorParent.visibility = View.VISIBLE
+            }
+            ShapeType.Heart -> {
                 binding.fillColorParent.visibility = View.VISIBLE
             }
         }
