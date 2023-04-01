@@ -8,13 +8,9 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import androidx.lifecycle.lifecycleScope
 import com.abhishek.colorpicker.toPx
 import com.flaxstudio.drawon.utils.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.lang.Float.min
+
 
 typealias  funUndoRedo = (isUndoVisible:Boolean, isRedoVisible: Boolean)->Unit
 class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) {
@@ -245,50 +241,57 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                     previousTouch = touchPos
                     isCurrentShapeDrawing = true
 
-                    if(currentSelectedTool == ShapeType.Brush){
-                        currentDrawingShape = Brush()
-                        currentDrawingShape.strokeColor = selectedTool.strokeColor
-                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                    when (currentSelectedTool) {
+                        ShapeType.Brush -> {
+                            currentDrawingShape = Brush()
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
 
-                        val pos = screenToCanvas(touchPos)
-                        (currentDrawingShape as Brush).path.moveTo(pos.x, pos.y)
-                        (currentDrawingShape as Brush).addMoveTo(pos.x, pos.y)
+                            val pos = screenToCanvas(touchPos)
+                            (currentDrawingShape as Brush).path.moveTo(pos.x, pos.y)
+                            (currentDrawingShape as Brush).addMoveTo(pos.x, pos.y)
 
-                    }else if(currentSelectedTool == ShapeType.Eraser){
-                        currentDrawingShape = Eraser()
-                        currentDrawingShape.strokeColor = selectedTool.strokeColor
-                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                        }
+                        ShapeType.Eraser -> {
+                            currentDrawingShape = Eraser()
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
 
-                        val pos = screenToCanvas(touchPos)
-                        (currentDrawingShape as Eraser).path.moveTo(pos.x, pos.y)
-                        (currentDrawingShape as Eraser).addMoveTo(pos.x, pos.y)
+                            val pos = screenToCanvas(touchPos)
+                            (currentDrawingShape as Eraser).path.moveTo(pos.x, pos.y)
+                            (currentDrawingShape as Eraser).addMoveTo(pos.x, pos.y)
 
-                    } else if(currentSelectedTool == ShapeType.Rectangle){
-                        currentDrawingShape = Rectangle()
-                        currentDrawingShape.fillColor = selectedTool.fillColor
-                        currentDrawingShape.strokeColor = selectedTool.strokeColor
-                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
-                        (currentDrawingShape as Rectangle).startPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Rectangle -> {
+                            currentDrawingShape = Rectangle()
+                            currentDrawingShape.fillColor = selectedTool.fillColor
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Rectangle).startPos.setValue(screenToCanvas(touchPos))
 
-                    }else if(currentSelectedTool == ShapeType.Line){
-                        currentDrawingShape = Line()
-                        currentDrawingShape.strokeColor = selectedTool.strokeColor
-                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
-                        (currentDrawingShape as Line).startPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Line -> {
+                            currentDrawingShape = Line()
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Line).startPos.setValue(screenToCanvas(touchPos))
 
-                    }else if(currentSelectedTool == ShapeType.Oval){
-                        currentDrawingShape = Oval()
-                        currentDrawingShape.fillColor = selectedTool.fillColor
-                        currentDrawingShape.strokeColor = selectedTool.strokeColor
-                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
-                        (currentDrawingShape as Oval).startPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Oval -> {
+                            currentDrawingShape = Oval()
+                            currentDrawingShape.fillColor = selectedTool.fillColor
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Oval).startPos.setValue(screenToCanvas(touchPos))
 
-                    }else if(currentSelectedTool == ShapeType.Triangle){
-                        currentDrawingShape = Triangle()
-                        currentDrawingShape.fillColor = selectedTool.fillColor
-                        currentDrawingShape.strokeColor = selectedTool.strokeColor
-                        currentDrawingShape.strokeWidth = selectedTool.strokeWidth
-                        (currentDrawingShape as Triangle).startPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Triangle -> {
+                            currentDrawingShape = Triangle()
+                            currentDrawingShape.fillColor = selectedTool.fillColor
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Triangle).startPos.setValue(screenToCanvas(touchPos))
+                        }
                     }
 
                 }else{
@@ -327,34 +330,41 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
                 if(isCurrentShapeDrawing){
 
-                    if(currentDrawingShape.shapeType == ShapeType.Brush){
-                        val ctp = screenToCanvas(previousTouch)
-                        val endP = screenToCanvas(touchPos)
-                        val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
-                        (currentDrawingShape as Brush).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
-                        (currentDrawingShape as Brush).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
-                        previousTouch.setValue(touchPos)
+                    when (currentDrawingShape.shapeType) {
+                        ShapeType.Brush -> {
+                            val ctp = screenToCanvas(previousTouch)
+                            val endP = screenToCanvas(touchPos)
+                            val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
+                            (currentDrawingShape as Brush).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
+                            (currentDrawingShape as Brush).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
+                            previousTouch.setValue(touchPos)
 
-                    }else if(currentDrawingShape.shapeType == ShapeType.Eraser){
-                        val ctp = screenToCanvas(previousTouch)
-                        val endP = screenToCanvas(touchPos)
-                        val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
-                        (currentDrawingShape as Eraser).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
-                        (currentDrawingShape as Eraser).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
-                        previousTouch.setValue(touchPos)
+                        }
+                        ShapeType.Eraser -> {
+                            val ctp = screenToCanvas(previousTouch)
+                            val endP = screenToCanvas(touchPos)
+                            val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
+                            (currentDrawingShape as Eraser).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
+                            (currentDrawingShape as Eraser).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
+                            previousTouch.setValue(touchPos)
 
-                    } else if(currentDrawingShape.shapeType == ShapeType.Rectangle){
-                        (currentDrawingShape as Rectangle).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Rectangle -> {
+                            (currentDrawingShape as Rectangle).endPos.setValue(screenToCanvas(touchPos))
 
-                    }else if(currentDrawingShape.shapeType == ShapeType.Line){
-                        (currentDrawingShape as Line).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Line -> {
+                            (currentDrawingShape as Line).endPos.setValue(screenToCanvas(touchPos))
 
-                    }else if(currentDrawingShape.shapeType == ShapeType.Oval){
-                        (currentDrawingShape as Oval).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Oval -> {
+                            (currentDrawingShape as Oval).endPos.setValue(screenToCanvas(touchPos))
 
-                    }else if(currentDrawingShape.shapeType == ShapeType.Triangle){
-                        (currentDrawingShape as Triangle).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Triangle -> {
+                            (currentDrawingShape as Triangle).endPos.setValue(screenToCanvas(touchPos))
 
+                        }
                     }
 
                     invalidate()
@@ -461,7 +471,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
 //      calculating default translate
         val top = measuredHeight / 2f - height / 2
-        val left = 30.toPx.toFloat()
+        val left = 0f
         canvasPosition.setValue(left, top)
 
     }
