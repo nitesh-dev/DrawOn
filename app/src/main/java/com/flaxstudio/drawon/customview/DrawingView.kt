@@ -3,18 +3,12 @@ package com.flaxstudio.drawon.customview
 import android.content.Context
 import android.graphics.*
 import android.graphics.Canvas
-import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import androidx.lifecycle.lifecycleScope
 import com.abhishek.colorpicker.toPx
 import com.flaxstudio.drawon.utils.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.lang.Float.min
 
 typealias  funUndoRedo = (isUndoVisible: Boolean, isRedoVisible: Boolean) -> Unit
 
@@ -624,7 +618,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
         // calculating default translate
         val top = measuredHeight / 2f - height / 2
-        val left = 30.toPx.toFloat()
+        val left = 0f
         canvasPosition.setValue(left, top)
 
     }
