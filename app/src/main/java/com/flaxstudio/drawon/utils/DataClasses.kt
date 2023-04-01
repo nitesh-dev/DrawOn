@@ -14,6 +14,11 @@ data class Vector2(var x: Float = 0f, var y: Float = 0f) {
         return Vector2(this.x - (this.x - vector.x)/2, this.y - (this.y - vector.y)/2)
     }
 
+    fun addOffset(x: Float, y: Float){
+        this.x += x
+        this.y += y
+    }
+
     operator fun plus(vector: Vector2): Vector2 {
         return Vector2(this.x + vector.x, this.y + vector.y)
     }
