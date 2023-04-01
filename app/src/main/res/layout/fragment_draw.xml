@@ -173,7 +173,8 @@
             android:layout_weight="1"
             android:fadeScrollbars="true"
             android:isScrollContainer="true"
-            android:scrollbarStyle="outsideOverlay">
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="none">
 
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/toolbarGroup"
@@ -229,6 +230,15 @@
                     android:layout_height="wrap_content"
                     android:checkable="true"
                     app:icon="@drawable/icon_triangle" />
+
+                <Button
+                    android:id="@+id/toolHeart"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_heart_outline" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </HorizontalScrollView>

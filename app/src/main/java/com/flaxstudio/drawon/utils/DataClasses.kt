@@ -82,6 +82,14 @@ class Triangle: Shape() {
     }
 }
 
+class Heart: Shape() {
+    var startPos = Vector2()
+    var endPos = Vector2()
+    init {
+        shapeType = ShapeType.Heart
+    }
+}
+
 
 
 class Brush: Shape(){
@@ -165,11 +173,6 @@ class EraserRaw: Shape(){
 
 
 
-data class ProjectData(
-    val allSavedShapes: ArrayList<Shape> = ArrayList(),
-    var toolsData: ArrayList<ToolProperties> = ArrayList()
-)
-
 data class ToolProperties(
     var shapeType: ShapeType = ShapeType.Rectangle,
     var fillColor: Int = Color.RED,
@@ -183,7 +186,8 @@ enum class ShapeType{
     Line,
     Brush,
     Eraser,
-    Triangle
+    Triangle,
+    Heart
 }
 
 enum class FragmentType{
