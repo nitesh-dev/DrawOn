@@ -23,7 +23,9 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private val allShape: ArrayList<Shape> = ArrayList()                    // undo
 
     private val toolsData: ArrayList<ToolProperties> = ArrayList()
-    private val tempPath = Path()                   // this path is used by triangle
+    private val tempPath = Path()                   // this path is used by triangle, heart
+    private var tempData = 0f                       // used to store temp value for some drawing
+    private val tempVector = Vector2()              // used to store temp value for some drawing
     private var isCurrentShapeDrawing = false
     private var currentDrawingShape = Shape()
     private var currentSelectedTool = ShapeType.Rectangle
@@ -32,13 +34,11 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private val whiteBoardRect = Rect(0, 0, 0, 0)
     private var previousTouch = Vector2()
     private var projectSavedBitmap: Bitmap? = null
-
     private var whiteBoardPaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.FILL
         color = Color.WHITE
     }
-
     private var shapePaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.STROKE
@@ -227,7 +227,41 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
             }
 
-            else -> {}
+            ShapeType.Heart -> {
+                shape as Heart
+                tempPath.reset()        // clear path for drawing
+
+                tempVector.setValue(shape.endPos.minus(shape.startPos))   // difference of two vector
+                // calculating heart top center position
+                tempPath.moveTo(shape.startPos.x + tempVector.x / 2, shape.startPos.y + tempVector.y * 0.3f)
+
+                // adding left part of heart
+                tempPath.cubicTo(shape.startPos.x + tempVector.x * 0.3f, shape.startPos.y, shape.startPos.x, shape.startPos.y + tempVector.y * 0.5f, shape.startPos.x + tempVector.x * 0.5f, shape.endPos.y)
+
+                // calculating heart top center position
+                tempPath.moveTo(shape.startPos.x + tempVector.x / 2, shape.startPos.y + tempVector.y * 0.3f)
+
+                // adding right part of heart
+                tempPath.cubicTo(shape.endPos.x - tempVector.x * 0.3f, shape.startPos.y, shape.endPos.x, shape.startPos.y + tempVector.y * 0.5f, shape.endPos.x - tempVector.x * 0.5f, shape.endPos.y)
+
+                // drawing fill if color is not transparent
+                if(!isColorTransparent(shape.fillColor)){
+
+                    shapePaint.color = shape.fillColor
+                    shapePaint.style = Paint.Style.FILL
+                    canvas.drawPath(tempPath, shapePaint)
+                }
+
+                // drawing stroke if color is not transparent
+                if(!isColorTransparent(shape.strokeColor)){
+
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawPath(tempPath, shapePaint)
+                }
+
+            }
         }
     }
 
@@ -349,34 +383,43 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
                 if(isCurrentShapeDrawing){
 
-                    if(currentDrawingShape.shapeType == ShapeType.Brush){
-                        val ctp = screenToCanvas(previousTouch)
-                        val endP = screenToCanvas(touchPos)
-                        val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
-                        (currentDrawingShape as Brush).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
-                        (currentDrawingShape as Brush).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
-                        previousTouch.setValue(touchPos)
+                    when (currentDrawingShape.shapeType) {
+                        ShapeType.Brush -> {
+                            val ctp = screenToCanvas(previousTouch)
+                            val endP = screenToCanvas(touchPos)
+                            val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
+                            (currentDrawingShape as Brush).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
+                            (currentDrawingShape as Brush).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
+                            previousTouch.setValue(touchPos)
 
-                    }else if(currentDrawingShape.shapeType == ShapeType.Eraser){
-                        val ctp = screenToCanvas(previousTouch)
-                        val endP = screenToCanvas(touchPos)
-                        val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
-                        (currentDrawingShape as Eraser).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
-                        (currentDrawingShape as Eraser).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
-                        previousTouch.setValue(touchPos)
+                        }
+                        ShapeType.Eraser -> {
+                            val ctp = screenToCanvas(previousTouch)
+                            val endP = screenToCanvas(touchPos)
+                            val newP = Vector2((endP.x + ctp.x) / 2, (endP.y + ctp.y) / 2)
+                            (currentDrawingShape as Eraser).path.quadTo(ctp.x, ctp.y, newP.x, newP.y)
+                            (currentDrawingShape as Eraser).addQuadTo(ctp.x, ctp.y, newP.x, newP.y)
+                            previousTouch.setValue(touchPos)
 
-                    } else if(currentDrawingShape.shapeType == ShapeType.Rectangle){
-                        (currentDrawingShape as Rectangle).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Rectangle -> {
+                            (currentDrawingShape as Rectangle).endPos.setValue(screenToCanvas(touchPos))
 
-                    }else if(currentDrawingShape.shapeType == ShapeType.Line){
-                        (currentDrawingShape as Line).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Line -> {
+                            (currentDrawingShape as Line).endPos.setValue(screenToCanvas(touchPos))
 
-                    }else if(currentDrawingShape.shapeType == ShapeType.Oval){
-                        (currentDrawingShape as Oval).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Oval -> {
+                            (currentDrawingShape as Oval).endPos.setValue(screenToCanvas(touchPos))
 
-                    }else if(currentDrawingShape.shapeType == ShapeType.Triangle){
-                        (currentDrawingShape as Triangle).endPos.setValue(screenToCanvas(touchPos))
-
+                        }
+                        ShapeType.Triangle -> {
+                            (currentDrawingShape as Triangle).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Heart -> {
+                            (currentDrawingShape as Heart).endPos.setValue(screenToCanvas(touchPos))
+                        }
                     }
 
                     invalidate()
