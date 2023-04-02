@@ -53,7 +53,7 @@ class SettingsFragment : Fragment() {
             val intent = Intent().apply{
                 action = Intent.ACTION_SENDTO
                 data = Uri.parse("mailto:")
-                putExtra(Intent.EXTRA_EMAIL, arrayOf("ssayam200@gmail.com"))
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("flaxstudiohelp@gmail.com"))
                 putExtra(Intent.EXTRA_SUBJECT, "Tell about our application")
             }
             startActivity(Intent.createChooser(intent, "Send Email"))
