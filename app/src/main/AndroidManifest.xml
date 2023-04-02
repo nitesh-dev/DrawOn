@@ -36,6 +36,16 @@
             android:hardwareAccelerated="true"
             tools:ignore="LockedOrientationActivity">
         </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.flaxstudio.drawon.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/catch_file_path" />
+        </provider>
     </application>
 
 </manifest>

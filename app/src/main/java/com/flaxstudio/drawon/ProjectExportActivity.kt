@@ -1,5 +1,7 @@
 package com.flaxstudio.drawon
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -9,13 +11,16 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.flaxstudio.drawon.databinding.ActivityProjectExportBinding
 import com.flaxstudio.drawon.utils.CustomDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 import java.io.IOException
+
 
 class ProjectExportActivity : AppCompatActivity() {
 
@@ -55,6 +60,29 @@ class ProjectExportActivity : AppCompatActivity() {
         binding.resetButton.setOnClickListener {
             binding.cropView.resetPointerToDefault()
         }
+
+        binding.shareButton.setOnClickListener {
+            shareImage()
+        }
+    }
+
+    private fun shareImage() {
+
+        val bitmap = binding.cropView.getCroppedBitmap()
+        if(bitmap == null){
+            Toast.makeText(applicationContext, "Unable to Share!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val file = File(applicationContext.cacheDir, "$projectName draw on.jpg")
+        file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+        val uri = FileProvider.getUriForFile(applicationContext, applicationContext.packageName + ".provider", file)
+
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/jpeg"
+            putExtra(Intent.EXTRA_STREAM, uri)
+        }
+
+        startActivity(Intent.createChooser(shareIntent, "Share image using"))
     }
 
     private fun startLoadingBitmap(){
