@@ -31,9 +31,6 @@ class CropView (context: Context, attrs: AttributeSet) : View(context, attrs) {
         isAntiAlias = true
     }
 
-    // TODO crop view not work on square image
-    // TODO drawing hide on width > 1280
-
     private val cropperTouchRadius = 20.toPx.toFloat()      // detect touch
     private val cropperPointSize = 8.toPx.toFloat()
     private var selectedPointer = Pointer.NULL              // used to check which pointer is selected
@@ -43,7 +40,7 @@ class CropView (context: Context, attrs: AttributeSet) : View(context, attrs) {
     private var scaledBitmap: Bitmap? = null                // actual bitmap to draw on canvas
     private var rawBitmap: Bitmap? = null                   // raw bitmap which is set by calling loadBitmap()
     private val bitmapRect = RectF()                        // bitmap drawing rect
-    private val cropperRect = RectF()                       // rect of cropper
+    private val cropperRect = RectF(-100f, -100f, -100f, -100f)   // rect of cropper
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
