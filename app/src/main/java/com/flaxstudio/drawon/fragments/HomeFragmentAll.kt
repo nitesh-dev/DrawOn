@@ -150,7 +150,7 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
 
         adapter.setOnClickListener { position, project ->
 
-            if (position == 0) {
+            if (position == 0 && fragmentType == FragmentType.Today) {
                 // create new project
                 openCreateProjectDialog()
 

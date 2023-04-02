@@ -1,6 +1,5 @@
 package com.flaxstudio.drawon.fragments
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,17 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.flaxstudio.drawon.MainActivity
 import com.flaxstudio.drawon.databinding.FragmentSettingsBinding
-import com.google.android.play.core.ktx.requestReview
-import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.android.play.core.review.model.ReviewErrorCode
 
 
 class SettingsFragment : Fragment() {
     private lateinit var binding: FragmentSettingsBinding
-    private lateinit var contextApp: Context
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,8 +26,6 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        contextApp = requireContext()
-
         // Back Clicked
         binding.btnBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -44,7 +35,8 @@ class SettingsFragment : Fragment() {
         binding.containerShare.setOnClickListener{
             val sendIntent : Intent = Intent().apply {
                 action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT , "Hey, I just made a really cool drawing using Draw On App .You should also download this amazing App.")
+                putExtra(Intent.EXTRA_TEXT , "Hey, I just made a really cool drawing using Draw On App .You should also download this amazing App. \n" +
+                        "https://play.google.com/store/apps/details?id=com.flaxstudio.drawon")
                 type = "text/plain"
             }
             val shareIntent = Intent.createChooser(sendIntent , "Share Draw On to your Friends")
@@ -53,14 +45,19 @@ class SettingsFragment : Fragment() {
 
         // RateUs CLicked
         binding.containerRateUs.setOnClickListener {
-            //Toast.makeText(context,"Added Soon...",Toast.LENGTH_SHORT).show()
-
-          //  showReviewDialog()
+            Toast.makeText(context,"Added Soon...",Toast.LENGTH_SHORT).show()
         }
 
         // feedback clicked
         binding.containerFeedback.setOnClickListener{
-            Toast.makeText(context,"Added Soon...",Toast.LENGTH_SHORT).show()
+            val intent = Intent().apply{
+                action = Intent.ACTION_SENDTO
+                data = Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("flaxstudiohelp@gmail.com"))
+                putExtra(Intent.EXTRA_SUBJECT, "Tell about our application")
+            }
+            startActivity(Intent.createChooser(intent, "Send Email"))
+
         }
 
         // Privacy Policy
@@ -69,18 +66,5 @@ class SettingsFragment : Fragment() {
             startActivity(browserIntent)
         }
     }
-
-    private fun showReviewDialog(){
-        val reviewManager = ReviewManagerFactory.create(contextApp)
-        reviewManager.requestReviewFlow().addOnCompleteListener{
-            if (it.isSuccessful){
-                reviewManager.launchReviewFlow(requireActivity(), it.result)
-            }
-        }
-    }
-
-
-
-
 
 }

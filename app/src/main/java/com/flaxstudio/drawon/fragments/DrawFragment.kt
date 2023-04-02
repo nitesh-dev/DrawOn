@@ -170,6 +170,7 @@ class DrawFragment : Fragment() {
 
 
         // color picker dialog
+        colorPickerDialog.isCancelable = false
         colorPickerDialog.setOnOkCancelListener { isOk, color ->
 
             isColorPickerOpened = false
