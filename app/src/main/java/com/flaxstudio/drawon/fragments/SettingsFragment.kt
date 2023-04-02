@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.flaxstudio.drawon.databinding.FragmentSettingsBinding
 
 
@@ -36,7 +35,8 @@ class SettingsFragment : Fragment() {
         binding.containerShare.setOnClickListener{
             val sendIntent : Intent = Intent().apply {
                 action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT , "Hey, I just made a really cool drawing using Draw On App .You should also download this amazing App.")
+                putExtra(Intent.EXTRA_TEXT , "Hey, I just made a really cool drawing using Draw On App .You should also download this amazing App. \n" +
+                        "https://play.google.com/store/apps/details?id=com.flaxstudio.drawon")
                 type = "text/plain"
             }
             val shareIntent = Intent.createChooser(sendIntent , "Share Draw On to your Friends")
@@ -50,7 +50,14 @@ class SettingsFragment : Fragment() {
 
         // feedback clicked
         binding.containerFeedback.setOnClickListener{
-            Toast.makeText(context,"Added Soon...",Toast.LENGTH_SHORT).show()
+            val intent = Intent().apply{
+                action = Intent.ACTION_SENDTO
+                data = Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("ssayam200@gmail.com"))
+                putExtra(Intent.EXTRA_SUBJECT, "Tell about our application")
+            }
+            startActivity(Intent.createChooser(intent, "Send Email"))
+
         }
 
         // Privacy Policy
