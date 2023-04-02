@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.flaxstudio.drawon.databinding.FragmentSettingsBinding
+import com.google.android.play.core.review.ReviewManagerFactory
 
 
 class SettingsFragment : Fragment() {
@@ -65,6 +66,16 @@ class SettingsFragment : Fragment() {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://nitesh-dev.github.io/DrawOn/privacy_policy"))
             startActivity(browserIntent)
         }
+    }
+
+    private fun showReviewDialog(){
+        val reviewManager = ReviewManagerFactory.create(requireContext())
+        reviewManager.requestReviewFlow().addOnCompleteListener{
+            if (it.isSuccessful){
+                reviewManager.launchReviewFlow(requireActivity() , it.result)
+            }
+        }
+
     }
 
 }
