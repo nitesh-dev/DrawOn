@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.flaxstudio.drawon.databinding.FragmentSettingsBinding
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -14,6 +13,8 @@ import com.google.android.play.core.review.ReviewManagerFactory
 
 class SettingsFragment : Fragment() {
     private lateinit var binding: FragmentSettingsBinding
+
+    private val appLink = "https://play.google.com/store/apps/details?id=com.flaxstudio.drawon"
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,7 +38,8 @@ class SettingsFragment : Fragment() {
             val sendIntent : Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT , "Hey, I just made a really cool drawing using Draw On App .You should also download this amazing App. \n" +
-                        "https://play.google.com/store/apps/details?id=com.flaxstudio.drawon")
+                        appLink
+                )
                 type = "text/plain"
             }
             val shareIntent = Intent.createChooser(sendIntent , "Share Draw On to your Friends")
@@ -46,7 +48,9 @@ class SettingsFragment : Fragment() {
 
         // RateUs CLicked
         binding.containerRateUs.setOnClickListener {
-            Toast.makeText(context,"Added Soon...",Toast.LENGTH_SHORT).show()
+
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(appLink))
+            startActivity(browserIntent)
         }
 
         // feedback clicked
