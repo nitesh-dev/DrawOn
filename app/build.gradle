@@ -13,8 +13,8 @@ android {
         applicationId "com.flaxstudio.drawon"
         minSdk 21
         targetSdk 33
-        versionCode 2
-        versionName "1.0.1v"
+        versionCode 3
+        versionName "1.0.2v"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

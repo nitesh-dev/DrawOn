@@ -67,7 +67,12 @@ class SettingsFragment : Fragment() {
 
         // Privacy Policy
         binding.containerPrivacyPolicy.setOnClickListener {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://nitesh-dev.github.io/DrawOn/privacy_policy"))
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://flax-studio.vercel.app/draw-on/privacy"))
+            startActivity(browserIntent)
+        }
+
+        binding.developers.setOnClickListener {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://flax-studio.vercel.app"))
             startActivity(browserIntent)
         }
     }
