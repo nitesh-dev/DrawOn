@@ -190,16 +190,12 @@ class HomeFragmentAll(fragmentType: FragmentType) : Fragment(R.layout.fragment_h
         }
         customAlertBox.findViewById<Button>(R.id.btn_create).setOnClickListener {
             val title = customAlertBox.findViewById<EditText>(R.id.et_title).text.toString()
-            val width = customAlertBox.findViewById<EditText>(R.id.edit_width).text.toString()
-            val height = customAlertBox.findViewById<EditText>(R.id.edit_height).text.toString()
 
             if(title.isBlank()) Toast.makeText(contextApp, "Name must not be empty", Toast.LENGTH_SHORT).show()
-            else if(width.isBlank())Toast.makeText(contextApp, "Width must not be empty", Toast.LENGTH_SHORT).show()
-            else if(height.isBlank())Toast.makeText(contextApp, "Height must not be empty", Toast.LENGTH_SHORT).show()
-            else if(width.toInt() > 2000) Toast.makeText(contextApp, "Width must not be smaller than 2000", Toast.LENGTH_SHORT).show()
-            else if(height.toInt() > 2000) Toast.makeText(contextApp, "Height must not be smaller than 2000", Toast.LENGTH_SHORT).show()
             else{
-                createNewProject(title, Size( width.toInt(), height.toInt()))
+                val width = getString(R.string.default_width).toInt()
+                val height = getString(R.string.default_height).toInt()
+                createNewProject(title, Size(width, height))
                 createProjectDialog.dismiss()
             }
         }

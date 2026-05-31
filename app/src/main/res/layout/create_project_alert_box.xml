@@ -36,48 +36,6 @@
         android:textColorHint="#94001662"
         android:textSize="@dimen/medium_text" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/edit_width"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:autofillHints="width"
-            android:background="@drawable/rounded_background"
-            android:hint="@string/hint_width"
-            android:inputType="number"
-            android:paddingVertical="8dp"
-            android:text="@string/default_width"
-            android:textAlignment="center"
-            android:textColor="@color/dark_blue"
-            android:textColorHint="#94001662"
-            android:textSize="@dimen/medium_text"
-            tools:ignore="TouchTargetSizeCheck" />
-
-        <EditText
-            android:id="@+id/edit_height"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:autofillHints="height"
-            android:background="@drawable/rounded_background"
-            android:hint="@string/hint_height"
-            android:inputType="number"
-            android:paddingVertical="8dp"
-            android:text="@string/default_height"
-            android:textAlignment="center"
-            android:textColor="@color/dark_blue"
-            android:textColorHint="#94001662"
-            android:textSize="@dimen/medium_text"
-            tools:ignore="TouchTargetSizeCheck" />
-    </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -232,6 +232,54 @@
                     app:icon="@drawable/icon_triangle" />
 
                 <Button
+                    android:id="@+id/toolSquare"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_square" />
+
+                <Button
+                    android:id="@+id/toolCircle"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_circle" />
+
+                <Button
+                    android:id="@+id/toolDiamond"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_diamond" />
+
+                <Button
+                    android:id="@+id/toolStar"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_star" />
+
+                <Button
+                    android:id="@+id/toolArrow"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_arrow" />
+
+                <Button
+                    android:id="@+id/toolPentagon"
+                    style="@style/draw_toolbar_icon_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    app:icon="@drawable/icon_pentagon" />
+
+                <Button
                     android:id="@+id/toolHeart"
                     style="@style/draw_toolbar_icon_button"
                     android:layout_width="wrap_content"

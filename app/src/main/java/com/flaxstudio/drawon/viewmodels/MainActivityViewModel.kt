@@ -51,6 +51,24 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
         // add Heart
         add(ToolProperties(ShapeType.Heart, Color.RED, Color.BLACK, 4f))
 
+        // add Square
+        add(ToolProperties(ShapeType.Square, Color.RED, Color.BLACK, 4f))
+
+        // add Circle
+        add(ToolProperties(ShapeType.Circle, Color.RED, Color.BLACK, 4f))
+
+        // add Diamond
+        add(ToolProperties(ShapeType.Diamond, Color.RED, Color.BLACK, 4f))
+
+        // add Star
+        add(ToolProperties(ShapeType.Star, Color.RED, Color.BLACK, 4f))
+
+        // add Arrow
+        add(ToolProperties(ShapeType.Arrow, Color.RED, Color.BLACK, 4f))
+
+        // add Pentagon
+        add(ToolProperties(ShapeType.Pentagon, Color.RED, Color.BLACK, 4f))
+
         // do more...
     }
 
@@ -91,8 +109,7 @@ class MainActivityViewModel(private val repository: ProjectRepository): ViewMode
 
         // creating empty bitmap for new project
         val emptyBitmap = Bitmap.createBitmap(newProject.whiteboardWidth, newProject.whiteboardHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(emptyBitmap)
-        canvas.drawRGB(255,255,255)
+        // bitmap is transparent by default
 
         val json = Gson().toJson(defaultToolbarProperties)                    // creating json file for saving
         saveBitmap(context, emptyBitmap, newProject.projectBitmapId)          // saving bitmap

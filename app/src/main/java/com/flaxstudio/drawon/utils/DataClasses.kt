@@ -11,7 +11,7 @@ data class Vector2(var x: Float = 0f, var y: Float = 0f) {
     }
 
     fun minPointVector(vector: Vector2): Vector2{
-        return Vector2(this.x - (this.x - vector.x)/2, this.y - (this.y - vector.y)/2)
+        return Vector2(Math.min(this.x, vector.x), Math.min(this.y, vector.y))
     }
 
     fun addOffset(x: Float, y: Float){
@@ -36,7 +36,9 @@ data class Vector2(var x: Float = 0f, var y: Float = 0f) {
         return Vector2(this.x, this.y)
     }
 
-
+    operator fun div(scale: Float): Vector2 {
+        return Vector2(x / scale, y / scale)
+    }
 }
 
 data class Size(var width: Int = 0, var height: Int = 0)
@@ -92,6 +94,60 @@ class Heart: Shape() {
     var endPos = Vector2()
     init {
         shapeType = ShapeType.Heart
+    }
+}
+
+class Square : Shape() {
+    var startPos = Vector2(0f, 0f)
+    var endPos = Vector2(0f, 0f)
+
+    init {
+        shapeType = ShapeType.Square
+    }
+}
+
+class Circle : Shape() {
+    var startPos = Vector2(0f, 0f)
+    var endPos = Vector2(0f, 0f)
+
+    init {
+        shapeType = ShapeType.Circle
+    }
+}
+
+class Diamond : Shape() {
+    var startPos = Vector2(0f, 0f)
+    var endPos = Vector2(0f, 0f)
+
+    init {
+        shapeType = ShapeType.Diamond
+    }
+}
+
+class Star : Shape() {
+    var startPos = Vector2(0f, 0f)
+    var endPos = Vector2(0f, 0f)
+
+    init {
+        shapeType = ShapeType.Star
+    }
+}
+
+class Arrow : Shape() {
+    var startPos = Vector2(0f, 0f)
+    var endPos = Vector2(0f, 0f)
+
+    init {
+        shapeType = ShapeType.Arrow
+    }
+}
+
+class Pentagon : Shape() {
+    var startPos = Vector2(0f, 0f)
+    var endPos = Vector2(0f, 0f)
+
+    init {
+        shapeType = ShapeType.Pentagon
     }
 }
 
@@ -192,7 +248,13 @@ enum class ShapeType{
     Brush,
     Eraser,
     Triangle,
-    Heart
+    Heart,
+    Square,
+    Circle,
+    Diamond,
+    Star,
+    Arrow,
+    Pentagon
 }
 
 enum class FragmentType{

@@ -19,21 +19,22 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     private val toolsData: ArrayList<ToolProperties> = ArrayList()
     private val tempPath = Path()                   // this path is used by triangle, heart
-    private var tempData = 0f                       // used to store temp value for some drawing
-    private val tempVector = Vector2()              // used to store temp value for some drawing
     private var isCurrentShapeDrawing = false
     private var currentDrawingShape = Shape()
     private var currentSelectedTool = ShapeType.Rectangle
-    private var isRedrawAllowed = true
     private var canvasPosition = Vector2()          // store canvas translate position
-    private val whiteBoardRect = Rect()
+    private var canvasScale = 1f                    // store canvas scale
     private var previousTouch = Vector2()
+    private var previousFingerDist = 0f
     private var projectSavedBitmap: Bitmap? = null
-    private var whiteBoardPaint = Paint().apply {
+    
+    private val gridPaint = Paint().apply {
         isAntiAlias = true
-        style = Paint.Style.FILL
-        color = Color.WHITE
+        style = Paint.Style.STROKE
+        color = Color.LTGRAY
+        strokeWidth = 1f
     }
+
     private var shapePaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.STROKE
@@ -43,13 +44,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         strokeCap = Paint.Cap.ROUND
     }
 
-    // store drawing limit of canvas, out off this offset shape will not be drawn
-    private val canvasDrawingAreaOffset = 40.toPx
-    private val canvasWhiteBoardOffsetRect = Rect()
-
     // Note: Update needed
-    private var catchBitmap: Bitmap? = null
-    private lateinit var canvasBitmap: Canvas
     private var totalShapeDrawn = 0
     private var undoRedoFun: funUndoRedo? = null
     private var isProjectSaved = true
@@ -60,45 +55,59 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        
+        // 1. Draw infinite white background
+        canvas.drawColor(Color.WHITE)
+        
+        // 2. Draw infinite grid
+        drawGrid(canvas)
+        
+        canvas.save()
         canvas.translate(canvasPosition.x, canvasPosition.y)
-        canvas.clipRect(whiteBoardRect)
+        canvas.scale(canvasScale, canvasScale)
 
-        // this will draw white screen if the project is new.
-        // Otherwise it will draw saved project bitmap.
-        if (projectSavedBitmap == null) canvas.drawRect(
-            whiteBoardRect,
-            whiteBoardPaint
-        ) else canvas.drawBitmap(projectSavedBitmap!!, 0F, 0F, null)
+        // 3. Draw content in a layer to support Eraser (CLEAR mode)
+        canvas.saveLayer(null, null)
 
-        if (isRedrawAllowed) {
-
-            undoRedoFun?.invoke(allShape.isNotEmpty(), allShapeRedo.isNotEmpty())
-            isRedrawAllowed = false
-        } else if (totalShapeDrawn < allShape.size) {
-
-            undoRedoFun?.invoke(allShape.isNotEmpty(), allShapeRedo.isNotEmpty())
-
-            if (catchBitmap != null) onDrawBitmap(canvasBitmap)
+        // Draw saved project bitmap if any
+        if (projectSavedBitmap != null) {
+            canvas.drawBitmap(projectSavedBitmap!!, 0F, 0F, null)
         }
 
-        if (catchBitmap != null) canvas.drawBitmap(catchBitmap!!, 0F, 0F, null)
+
+        // Draw all committed shapes
+        for (shape in allShape) {
+            drawShape(canvas, shape)
+        }
 
         // drawing current drawing shape
         if (isCurrentShapeDrawing) {
             drawShape(canvas, currentDrawingShape)
         }
+        
+        canvas.restore() // Restore layer
+        canvas.restore() // Restore translate/scale
+
+        // Update UI state
+        if (totalShapeDrawn != allShape.size) {
+            undoRedoFun?.invoke(allShape.isNotEmpty(), allShapeRedo.isNotEmpty())
+            totalShapeDrawn = allShape.size
+        }
+
 
     }
 
-    private fun onDrawBitmap(canvas: Canvas, isDrawAll: Boolean = false) {
-
-        if (isDrawAll) {
-            catchBitmap!!.eraseColor(Color.TRANSPARENT)
-            for (shape in allShape) {
-                drawShape(canvas, shape)
-            }
-        } else drawShape(canvas, allShape.last())
-        totalShapeDrawn = allShape.size
+    private fun drawGrid(canvas: Canvas) {
+        val gridSize = 50f * canvasScale
+        val offsetX = canvasPosition.x % gridSize
+        val offsetY = canvasPosition.y % gridSize
+        
+        for (x in 0..width step gridSize.toInt()) {
+            canvas.drawLine(x + offsetX, 0f, x + offsetX, height.toFloat(), gridPaint)
+        }
+        for (y in 0..height step gridSize.toInt()) {
+            canvas.drawLine(0f, y + offsetY, width.toFloat(), y + offsetY, gridPaint)
+        }
     }
 
     private fun drawShape(canvas: Canvas, shape: Shape) {
@@ -150,13 +159,182 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
             ShapeType.Eraser -> {
                 shape as Eraser
-
-                Log.e("======", "hello")
-
-                shapePaint.color = shape.strokeColor
                 shapePaint.strokeWidth = shape.strokeWidth
                 shapePaint.style = Paint.Style.STROKE
+                shapePaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
                 canvas.drawPath(shape.path, shapePaint)
+                shapePaint.xfermode = null
+            }
+
+            ShapeType.Square -> {
+                shape as Square
+                // drawing fill shape if color is not transparent
+                if (!isColorTransparent(shape.fillColor)) {
+                    shapePaint.color = shape.fillColor
+                    shapePaint.style = Paint.Style.FILL
+                    canvas.drawRect(
+                        shape.startPos.x,
+                        shape.startPos.y,
+                        shape.endPos.x,
+                        shape.endPos.y,
+                        shapePaint
+                    )
+                }
+
+                // drawing stroke shape if color is not transparent
+                if (!isColorTransparent(shape.strokeColor)) {
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawRect(
+                        shape.startPos.x,
+                        shape.startPos.y,
+                        shape.endPos.x,
+                        shape.endPos.y, shapePaint
+                    )
+                }
+            }
+
+            ShapeType.Circle -> {
+                shape as Circle
+                // drawing fill shape if color is not transparent
+                if (!isColorTransparent(shape.fillColor)) {
+                    shapePaint.color = shape.fillColor
+                    shapePaint.style = Paint.Style.FILL
+                    canvas.drawOval(
+                        shape.startPos.x,
+                        shape.startPos.y,
+                        shape.endPos.x,
+                        shape.endPos.y,
+                        shapePaint
+                    )
+                }
+
+                // drawing stroke if color is not transparent
+                if (!isColorTransparent(shape.strokeColor)) {
+
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawOval(
+                        shape.startPos.x,
+                        shape.startPos.y,
+                        shape.endPos.x,
+                        shape.endPos.y,
+                        shapePaint
+                    )
+                }
+            }
+
+            ShapeType.Diamond -> {
+                shape as Diamond
+                tempPath.reset()
+                val centerX = (shape.startPos.x + shape.endPos.x) / 2
+                val centerY = (shape.startPos.y + shape.endPos.y) / 2
+                tempPath.moveTo(centerX, shape.startPos.y)
+                tempPath.lineTo(shape.endPos.x, centerY)
+                tempPath.lineTo(centerX, shape.endPos.y)
+                tempPath.lineTo(shape.startPos.x, centerY)
+                tempPath.close()
+
+                if (!isColorTransparent(shape.fillColor)) {
+                    shapePaint.color = shape.fillColor
+                    shapePaint.style = Paint.Style.FILL
+                    canvas.drawPath(tempPath, shapePaint)
+                }
+                if (!isColorTransparent(shape.strokeColor)) {
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawPath(tempPath, shapePaint)
+                }
+            }
+
+            ShapeType.Star -> {
+                shape as Star
+                tempPath.reset()
+                val centerX = (shape.startPos.x + shape.endPos.x) / 2
+                val centerY = (shape.startPos.y + shape.endPos.y) / 2
+                val radius = Math.min(Math.abs(shape.endPos.x - shape.startPos.x), Math.abs(shape.endPos.y - shape.startPos.y)) / 2
+                val innerRadius = radius / 2.5f
+                
+                for (i in 0 until 10) {
+                    val angle = Math.toRadians((i * 36 - 90).toDouble())
+                    val r = if (i % 2 == 0) radius else innerRadius
+                    val x = (centerX + r * Math.cos(angle)).toFloat()
+                    val y = (centerY + r * Math.sin(angle)).toFloat()
+                    if (i == 0) tempPath.moveTo(x, y) else tempPath.lineTo(x, y)
+                }
+                tempPath.close()
+
+                if (!isColorTransparent(shape.fillColor)) {
+                    shapePaint.color = shape.fillColor
+                    shapePaint.style = Paint.Style.FILL
+                    canvas.drawPath(tempPath, shapePaint)
+                }
+                if (!isColorTransparent(shape.strokeColor)) {
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawPath(tempPath, shapePaint)
+                }
+            }
+
+            ShapeType.Arrow -> {
+                shape as Arrow
+                tempPath.reset()
+                val startX = shape.startPos.x
+                val startY = shape.startPos.y
+                val endX = shape.endPos.x
+                val endY = shape.endPos.y
+                
+                val dx = endX - startX
+                val dy = endY - startY
+                val angle = Math.atan2(dy.toDouble(), dx.toDouble())
+                val arrowHeadLen = 40f
+                val arrowHeadAngle = Math.PI / 6
+                
+                tempPath.moveTo(startX, startY)
+                tempPath.lineTo(endX, endY)
+                tempPath.moveTo(endX, endY)
+                tempPath.lineTo((endX - arrowHeadLen * Math.cos(angle - arrowHeadAngle)).toFloat(), (endY - arrowHeadLen * Math.sin(angle - arrowHeadAngle)).toFloat())
+                tempPath.moveTo(endX, endY)
+                tempPath.lineTo((endX - arrowHeadLen * Math.cos(angle + arrowHeadAngle)).toFloat(), (endY - arrowHeadLen * Math.sin(angle + arrowHeadAngle)).toFloat())
+
+                if (!isColorTransparent(shape.strokeColor)) {
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawPath(tempPath, shapePaint)
+                }
+            }
+
+            ShapeType.Pentagon -> {
+                shape as Pentagon
+                tempPath.reset()
+                val centerX = (shape.startPos.x + shape.endPos.x) / 2
+                val centerY = (shape.startPos.y + shape.endPos.y) / 2
+                val radius = Math.min(Math.abs(shape.endPos.x - shape.startPos.x), Math.abs(shape.endPos.y - shape.startPos.y)) / 2
+                
+                for (i in 0 until 5) {
+                    val angle = Math.toRadians((i * 72 - 90).toDouble())
+                    val x = (centerX + radius * Math.cos(angle)).toFloat()
+                    val y = (centerY + radius * Math.sin(angle)).toFloat()
+                    if (i == 0) tempPath.moveTo(x, y) else tempPath.lineTo(x, y)
+                }
+                tempPath.close()
+
+                if (!isColorTransparent(shape.fillColor)) {
+                    shapePaint.color = shape.fillColor
+                    shapePaint.style = Paint.Style.FILL
+                    canvas.drawPath(tempPath, shapePaint)
+                }
+                if (!isColorTransparent(shape.strokeColor)) {
+                    shapePaint.color = shape.strokeColor
+                    shapePaint.strokeWidth = shape.strokeWidth
+                    shapePaint.style = Paint.Style.STROKE
+                    canvas.drawPath(tempPath, shapePaint)
+                }
             }
 
             ShapeType.Line -> {
@@ -248,36 +426,36 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 shape as Heart
                 tempPath.reset()        // clear path for drawing
 
-                tempVector.setValue(shape.endPos.minus(shape.startPos))   // difference of two vector
+                val diffVector = shape.endPos.minus(shape.startPos)   // difference of two vector
                 // calculating heart top center position
                 tempPath.moveTo(
-                    shape.startPos.x + tempVector.x / 2,
-                    shape.startPos.y + tempVector.y * 0.3f
+                    shape.startPos.x + diffVector.x / 2,
+                    shape.startPos.y + diffVector.y * 0.3f
                 )
 
                 // adding left part of heart
                 tempPath.cubicTo(
-                    shape.startPos.x + tempVector.x * 0.3f,
+                    shape.startPos.x + diffVector.x * 0.3f,
                     shape.startPos.y,
                     shape.startPos.x,
-                    shape.startPos.y + tempVector.y * 0.5f,
-                    shape.startPos.x + tempVector.x * 0.5f,
+                    shape.startPos.y + diffVector.y * 0.5f,
+                    shape.startPos.x + diffVector.x * 0.5f,
                     shape.endPos.y
                 )
 
                 // calculating heart top center position
                 tempPath.moveTo(
-                    shape.startPos.x + tempVector.x / 2,
-                    shape.startPos.y + tempVector.y * 0.3f
+                    shape.startPos.x + diffVector.x / 2,
+                    shape.startPos.y + diffVector.y * 0.3f
                 )
 
                 // adding right part of heart
                 tempPath.cubicTo(
-                    shape.endPos.x - tempVector.x * 0.3f,
+                    shape.endPos.x - diffVector.x * 0.3f,
                     shape.startPos.y,
                     shape.endPos.x,
-                    shape.startPos.y + tempVector.y * 0.5f,
-                    shape.endPos.x - tempVector.x * 0.5f,
+                    shape.startPos.y + diffVector.y * 0.5f,
+                    shape.endPos.x - diffVector.x * 0.5f,
                     shape.endPos.y
                 )
 
@@ -310,7 +488,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
             MotionEvent.ACTION_DOWN -> {
 
                 // if touch will not in limiting area then skip this step
-                if (!isTouchWithinLimitingArea(touchPos)) return false
+                if (!isTouchWithinLimitingArea()) return false
 
                 val selectedTool = getSelectedToolProp(currentSelectedTool)
                 if (selectedTool != null) {
@@ -399,6 +577,53 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                             (currentDrawingShape as Heart).startPos.setValue(screenToCanvas(touchPos))
                             (currentDrawingShape as Heart).endPos.setValue(screenToCanvas(touchPos))
                         }
+                        ShapeType.Square -> {
+                            currentDrawingShape = Square()
+                            currentDrawingShape.fillColor = selectedTool.fillColor
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Square).startPos.setValue(screenToCanvas(touchPos))
+                            (currentDrawingShape as Square).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Circle -> {
+                            currentDrawingShape = Circle()
+                            currentDrawingShape.fillColor = selectedTool.fillColor
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Circle).startPos.setValue(screenToCanvas(touchPos))
+                            (currentDrawingShape as Circle).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Diamond -> {
+                            currentDrawingShape = Diamond()
+                            currentDrawingShape.fillColor = selectedTool.fillColor
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Diamond).startPos.setValue(screenToCanvas(touchPos))
+                            (currentDrawingShape as Diamond).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Star -> {
+                            currentDrawingShape = Star()
+                            currentDrawingShape.fillColor = selectedTool.fillColor
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Star).startPos.setValue(screenToCanvas(touchPos))
+                            (currentDrawingShape as Star).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Arrow -> {
+                            currentDrawingShape = Arrow()
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Arrow).startPos.setValue(screenToCanvas(touchPos))
+                            (currentDrawingShape as Arrow).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Pentagon -> {
+                            currentDrawingShape = Pentagon()
+                            currentDrawingShape.fillColor = selectedTool.fillColor
+                            currentDrawingShape.strokeColor = selectedTool.strokeColor
+                            currentDrawingShape.strokeWidth = selectedTool.strokeWidth
+                            (currentDrawingShape as Pentagon).startPos.setValue(screenToCanvas(touchPos))
+                            (currentDrawingShape as Pentagon).endPos.setValue(screenToCanvas(touchPos))
+                        }
                     }
 
                 } else {
@@ -414,8 +639,13 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                     val touch1 = Vector2(event.getX(0), event.getY(0))
                     val touch2 = Vector2(event.getX(1), event.getY(1))
                     previousTouch = touch1.minPointVector(touch2)
+                    
+                    val dx = event.getX(0) - event.getX(1)
+                    val dy = event.getY(0) - event.getY(1)
+                    previousFingerDist = Math.sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+                    
                     invalidate()
-
+                    return true
                 }
             }
 
@@ -427,9 +657,30 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                     val touch1 = Vector2(event.getX(0), event.getY(0))
                     val touch2 = Vector2(event.getX(1), event.getY(1))
                     val currentTouch = touch1.minPointVector(touch2)
+                    
+                    // Pan
                     val deltaChange = currentTouch - previousTouch
                     canvasPosition += deltaChange
                     previousTouch = currentTouch
+                    
+                    // Zoom
+                    val dx = event.getX(0) - event.getX(1)
+                    val dy = event.getY(0) - event.getY(1)
+                    val currentFingerDist = Math.sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+                    
+                    if (previousFingerDist != 0f) {
+                        val scaleFactor = currentFingerDist / previousFingerDist
+                        
+                        val focalX = (event.getX(0) + event.getX(1)) / 2
+                        val focalY = (event.getY(0) + event.getY(1)) / 2
+                        
+                        // Scale around focal point
+                        canvasPosition.x = focalX - (focalX - canvasPosition.x) * scaleFactor
+                        canvasPosition.y = focalY - (focalY - canvasPosition.y) * scaleFactor
+                        
+                        canvasScale *= scaleFactor
+                    }
+                    previousFingerDist = currentFingerDist
 
                     invalidate()
                     return true
@@ -488,9 +739,38 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                         ShapeType.Heart -> {
                             (currentDrawingShape as Heart).endPos.setValue(screenToCanvas(touchPos))
                         }
+                        ShapeType.Square -> {
+                            val startP = (currentDrawingShape as Square).startPos
+                            val endP = screenToCanvas(touchPos)
+                            val side = Math.max(Math.abs(endP.x - startP.x), Math.abs(endP.y - startP.y))
+                            val newEndX = if (endP.x > startP.x) startP.x + side else startP.x - side
+                            val newEndY = if (endP.y > startP.y) startP.y + side else startP.y - side
+                            (currentDrawingShape as Square).endPos.setValue(newEndX, newEndY)
+                        }
+                        ShapeType.Circle -> {
+                            val startP = (currentDrawingShape as Circle).startPos
+                            val endP = screenToCanvas(touchPos)
+                            val side = Math.max(Math.abs(endP.x - startP.x), Math.abs(endP.y - startP.y))
+                            val newEndX = if (endP.x > startP.x) startP.x + side else startP.x - side
+                            val newEndY = if (endP.y > startP.y) startP.y + side else startP.y - side
+                            (currentDrawingShape as Circle).endPos.setValue(newEndX, newEndY)
+                        }
+                        ShapeType.Diamond -> {
+                            (currentDrawingShape as Diamond).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Star -> {
+                            (currentDrawingShape as Star).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Arrow -> {
+                            (currentDrawingShape as Arrow).endPos.setValue(screenToCanvas(touchPos))
+                        }
+                        ShapeType.Pentagon -> {
+                            (currentDrawingShape as Pentagon).endPos.setValue(screenToCanvas(touchPos))
+                        }
                     }
 
                     invalidate()
+                    return true
                 }
             }
 
@@ -513,12 +793,9 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         return true
     }
 
-    private fun isTouchWithinLimitingArea(vector2: Vector2): Boolean {
-        val pos = screenToCanvas(vector2)
-        if (pos.x > canvasWhiteBoardOffsetRect.left && pos.x < canvasWhiteBoardOffsetRect.right && pos.y > canvasWhiteBoardOffsetRect.top && pos.y < canvasWhiteBoardOffsetRect.bottom) {
-            return true
-        }
-        return false
+    private fun isTouchWithinLimitingArea(): Boolean {
+        // Return true to allow drawing anywhere, making the canvas "infinite"
+        return true
     }
 
 
@@ -533,7 +810,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     private fun screenToCanvas(screenPos: Vector2): Vector2 {
-        return screenPos - canvasPosition
+        return (screenPos - canvasPosition) / canvasScale
     }
 
 
@@ -543,19 +820,14 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     fun getCanvasBitmap(): Bitmap {
-        val bitmap = Bitmap.createBitmap(
-            whiteBoardRect.width(),
-            whiteBoardRect.height(),
-            Bitmap.Config.ARGB_8888
-        )
+        // Use a default size or calculate based on content if needed
+        // For now, let's use a standard 1080p size or something sensible
+        val width = 1920
+        val height = 1080
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val bitmapCanvas = Canvas(bitmap)
 
-        //bitmapCanvas.clipRect(whiteBoardRect)
-
-        if (projectSavedBitmap == null) bitmapCanvas.drawRect(
-            whiteBoardRect,
-            whiteBoardPaint
-        ) else {
+        if (projectSavedBitmap != null) {
             bitmapCanvas.drawBitmap(projectSavedBitmap!!, 0f, 0f, null)
         }
         for (shape in allShape) drawShape(bitmapCanvas, shape)
@@ -597,30 +869,12 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         currentSelectedTool = toolType
     }
 
-    fun setWhiteBoardSize(width: Int, height: Int) {
-        // note this function is calling after some delay
-        whiteBoardRect.right = width
-        whiteBoardRect.bottom = height
-
-        // calculating canvas drawing limit offset. This will stop drawing if touch is out of bound of this area
-        canvasWhiteBoardOffsetRect.left = -canvasDrawingAreaOffset
-        canvasWhiteBoardOffsetRect.top = -canvasDrawingAreaOffset
-        canvasWhiteBoardOffsetRect.right = whiteBoardRect.right + canvasDrawingAreaOffset
-        canvasWhiteBoardOffsetRect.bottom = whiteBoardRect.bottom + canvasDrawingAreaOffset
-
-        // creating bitmap for drawing, It size will be fixed once created
-        catchBitmap = Bitmap.createBitmap(
-            whiteBoardRect.width(),
-            whiteBoardRect.height(),
-            Bitmap.Config.ARGB_8888
-        )
-        canvasBitmap = Canvas(catchBitmap!!)
-
-        // calculating default translate
+    fun initializeView(width: Int, height: Int) {
+        // calculating default translate to center the initial area
         val top = measuredHeight / 2f - height / 2
-        val left = 0f
+        val left = measuredWidth / 2f - width / 2
         canvasPosition.setValue(left, top)
-
+        canvasScale = 1f
     }
 
     fun undo() {
@@ -634,20 +888,17 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     fun clearCanvas() {
-        if (projectSavedBitmap == null) return
         allShape.clear()
         allShapeRedo.clear()
-        projectSavedBitmap!!.eraseColor(Color.WHITE)
-        onDrawBitmap(canvasBitmap, true)
+        if (projectSavedBitmap != null) {
+            projectSavedBitmap!!.eraseColor(Color.TRANSPARENT)
+        }
         isProjectSaved = false
-        isRedrawAllowed = true
         invalidate()
     }
 
     suspend fun reDraw() {
-        // creating bitmap
-        onDrawBitmap(canvasBitmap, true)
-        isRedrawAllowed = true
+        invalidate()
     }
 
     fun setProjectSaved() {

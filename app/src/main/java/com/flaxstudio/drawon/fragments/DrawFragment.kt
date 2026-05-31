@@ -152,6 +152,30 @@ class DrawFragment : Fragment() {
                     binding.drawingView.setSelectedTool(ShapeType.Triangle)
                     updatePropertiesPanelData(ShapeType.Triangle)
                 }
+                R.id.toolSquare -> {
+                    binding.drawingView.setSelectedTool(ShapeType.Square)
+                    updatePropertiesPanelData(ShapeType.Square)
+                }
+                R.id.toolCircle -> {
+                    binding.drawingView.setSelectedTool(ShapeType.Circle)
+                    updatePropertiesPanelData(ShapeType.Circle)
+                }
+                R.id.toolDiamond -> {
+                    binding.drawingView.setSelectedTool(ShapeType.Diamond)
+                    updatePropertiesPanelData(ShapeType.Diamond)
+                }
+                R.id.toolStar -> {
+                    binding.drawingView.setSelectedTool(ShapeType.Star)
+                    updatePropertiesPanelData(ShapeType.Star)
+                }
+                R.id.toolArrow -> {
+                    binding.drawingView.setSelectedTool(ShapeType.Arrow)
+                    updatePropertiesPanelData(ShapeType.Arrow)
+                }
+                R.id.toolPentagon -> {
+                    binding.drawingView.setSelectedTool(ShapeType.Pentagon)
+                    updatePropertiesPanelData(ShapeType.Pentagon)
+                }
                 R.id.toolEraser -> {
                     binding.drawingView.setSelectedTool(ShapeType.Eraser)
                     updatePropertiesPanelData(ShapeType.Eraser)
@@ -287,6 +311,24 @@ class DrawFragment : Fragment() {
             ShapeType.Triangle -> {
                 binding.fillColorParent.visibility = View.VISIBLE
             }
+            ShapeType.Square -> {
+                binding.fillColorParent.visibility = View.VISIBLE
+            }
+            ShapeType.Circle -> {
+                binding.fillColorParent.visibility = View.VISIBLE
+            }
+            ShapeType.Diamond -> {
+                binding.fillColorParent.visibility = View.VISIBLE
+            }
+            ShapeType.Star -> {
+                binding.fillColorParent.visibility = View.VISIBLE
+            }
+            ShapeType.Arrow -> {
+                binding.fillColorParent.visibility = View.GONE
+            }
+            ShapeType.Pentagon -> {
+                binding.fillColorParent.visibility = View.VISIBLE
+            }
             ShapeType.Heart -> {
                 binding.fillColorParent.visibility = View.VISIBLE
             }
@@ -352,7 +394,7 @@ class DrawFragment : Fragment() {
             mainActivityViewModel.getBitmapTask(contextApp,  mainActivityViewModel.openedProject.projectBitmapId){ bitmap ->
                 val width = mainActivityViewModel.openedProject.whiteboardWidth
                 val height = mainActivityViewModel.openedProject.whiteboardHeight
-                binding.drawingView.setWhiteBoardSize(width, height)
+                binding.drawingView.initializeView(width, height)
                 binding.drawingView.setProjectSavedBitmap(bitmap)
 
             }
